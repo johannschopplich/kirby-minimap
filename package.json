@@ -16,9 +16,9 @@
     "@antfu/eslint-config": "^4.11.0",
     "autoprefixer": "^10.4.21",
     "bumpp": "^10.1.0",
-    "eslint": "^9.24.0",
+    "eslint": "^9.27.0",
     "kirbyup": "^3.3.0",
-    "kirbyuse": "^0.11.3",
+    "kirbyuse": "^0.12.1",
     "prettier": "^3.5.3",
     "tailwindcss": "3",
     "zx": "^8.5.0"
