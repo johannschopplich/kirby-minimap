@@ -34,8 +34,8 @@ const resolvedFields = computed(() =>
               .filter((block) => !EXCLUDED_FIELD_TYPES.includes(block.type))
               .map((block) => ({
                 ...block,
-                _icon: getBlockIcon(block.type),
-                _text: extractBlockText(block),
+                _icon: getBlockIcon(block.type, field),
+                _text: extractBlockText(block, field),
                 _active: activeBlockIds.value.includes(block.id),
               }))
           : [];
