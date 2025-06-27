@@ -1,4 +1,4 @@
-![Kirby Minimap screenshot](./.github/kirby-minimap.png)
+[![Kirby Minimap screenshot](./.github/kirby-minimap.png)](https://kirby.tools/minimap)
 
 # Kirby Minimap
 
