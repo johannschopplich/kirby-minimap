@@ -8,9 +8,9 @@ This is especially useful when working with complex page designs that contain ma
 
 ## Features
 
-- 🧭 **Field Navigation**: Click on any field or block to scroll to that position in the content editor
-- 📯 **Block Preview**: For block fields, the minimap shows each block with its type icon and content preview
-- 🔆 **Automatic Highlighting**: The minimap automatically highlights your current position as you scroll through the Panel view
+- 🖱️ **Field Navigation**: Click on any field or block to scroll to that position in the content editor
+- 🎬 **Block Preview**: For block fields, the minimap shows each block with its type icon and content preview
+- 🫴 **Automatic Highlighting**: The minimap automatically highlights your current position as you scroll through the Panel view
 
 ## Demo
 
