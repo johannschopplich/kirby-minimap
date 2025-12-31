@@ -17,6 +17,11 @@
       "homepage": "https://johannschopplich.com"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "JohannSchopplich\\KirbyPlugins\\": "src/classes/KirbyPlugins/"
+    }
+  },
   "require": {
     "getkirby/composer-installer": "^1"
   },
