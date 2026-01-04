@@ -36,19 +36,9 @@ composer require johannschopplich/kirby-minimap
 
 Download and copy this repository to `/site/plugins/kirby-minimap`.
 
-## Getting Started
+## Documentation
 
-Once installed, the minimap will automatically appear on the right side of your Panel when editing content. The minimap has two states:
-
-1. **Collapsed**
-   Shows only a thin vertical line with markers for each field.
-2. **Expanded**
-   Shows the full minimap with field names and block details.
-
-You can toggle between these states by clicking the arrow button at the top of the minimap.
-
-> [!NOTE]
-> Contentless field types (e.g. `gap`, `hidden`, `line`) are not displayed in the minimap.
+For detailed usage instructions and configuration options, visit the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
 
 ## License
 
