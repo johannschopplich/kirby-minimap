@@ -1,7 +1,7 @@
 <?php
 
-use JohannSchopplich\KirbyPlugins\FieldResolver;
-use JohannSchopplich\KirbyPlugins\ModelResolver;
+use JohannSchopplich\KirbyTools\FieldResolver;
+use JohannSchopplich\KirbyTools\ModelResolver;
 use Kirby\Cms\App;
 
 return [
