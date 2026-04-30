@@ -310,13 +310,13 @@ function scrollToField(fieldName) {
               @click="scrollToField(field.name)"
             >
               <template v-if="isOpen">
-                <span class="k-label-text km-font-[var(--font-semi)]">
+                <span class="k-label-text km-[font-weight:var(--font-semi)]">
                   {{ field.label }}
                 </span>
                 <span
                   v-if="field.required"
                   :title="panel.t('field.required')"
-                  class="km-font-[var(--font-semi)] km-text-[var(--theme-color-600)] km-ms-[var(--spacing-1)]"
+                  class="km-[font-weight:var(--font-semi)] km-ms-[var(--spacing-1)] km-text-[var(--theme-color-600)]"
                   data-theme="negative"
                   v-text="'✶'"
                 />
@@ -327,7 +327,7 @@ function scrollToField(fieldName) {
               <div
                 v-for="(block, blockIndex) in field.blocks"
                 :key="`${blockIndex}-${block.id}`"
-                class="k-panel-minimap-menu-item km-flex km-py-[var(--spacing-1)] km-items-center km-gap-[var(--spacing-2)]"
+                class="k-panel-minimap-menu-item km-flex km-items-center km-gap-[var(--spacing-2)] km-py-[var(--spacing-1)]"
                 :data-active="String(block._active)"
                 @click="scrollToBlock(block.id)"
               >

@@ -1,6 +1,3 @@
-@tailwind components;
-@tailwind utilities;
-
 :root {
   --minimap-width-closed: calc(1rem + 2 * var(--menu-padding));
   --minimap-width-open: var(--menu-width-open);
