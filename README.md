@@ -22,23 +22,21 @@ https://github.com/user-attachments/assets/40e4e439-a79a-49b4-9c55-d6ab8fba8373
 
 - Kirby 4 or Kirby 5
 
-Kirby is not free software. However, you can try Kirby and the Starterkit on your local machine or on a test server as long as you need to make sure it is the right tool for your next project. … and when you're convinced, [buy your license](https://getkirby.com/buy).
-
 ## Installation
 
-### Composer
+### Composer (Recommended)
 
 ```bash
 composer require johannschopplich/kirby-minimap
 ```
 
-### Download
+### Manual Installation
 
 Download and copy this repository to `/site/plugins/kirby-minimap`.
 
 ## Documentation
 
-For detailed usage instructions and configuration options, visit the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
+For detailed usage instructions, visit the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
 
 ## License
 
