@@ -18,6 +18,7 @@
     }
   ],
   "require": {
+    "php": ">=8.2",
     "getkirby/composer-installer": "^1",
     "johannschopplich/kirby-tools-utils": "^0.1"
   },
