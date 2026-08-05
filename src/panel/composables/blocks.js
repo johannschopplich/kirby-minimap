@@ -20,7 +20,8 @@ export function useBlocks() {
   const panel = usePanel();
 
   /**
-   * Get the icon name for a block based on its type.
+   * Returns the icon name for a block type, preferring the icon declared by
+   * the fieldset.
    *
    * @param {string} type - The block type
    * @param {object} field - The field object containing fieldsets
@@ -31,7 +32,8 @@ export function useBlocks() {
   }
 
   /**
-   * Get the most relevant text from a block based on its type.
+   * Returns the block's most meaningful text for display, falling back to the
+   * block type's name.
    *
    * @param {object} block - The block object
    * @param {object} field - The field object containing fieldsets
@@ -83,7 +85,7 @@ export function useBlocks() {
   }
 
   /**
-   * Scroll to a specific block in the editor.
+   * Scrolls a block into view and pulses a highlight on it.
    *
    * @param {string} blockId - The ID of the block to scroll to
    */
@@ -103,7 +105,7 @@ export function useBlocks() {
       blockElement.classList.remove(BLOCK_ANIMATION_CLASS);
     }, 2000);
 
-    // Close the mobile menu
+    // Close the mobile menu.
     // See: https://github.com/getkirby/kirby/blob/938fe98951cace6c77aab744779bf4e0799ad705/panel/src/panel/menu.js#L25
     if (window.matchMedia?.("(max-width: 60rem)").matches) {
       panel.menu.close();
@@ -118,7 +120,7 @@ export function useBlocks() {
 }
 
 /**
- * Strip HTML tags from a string and limit its length.
+ * Strips HTML tags from a string and limits its length.
  *
  * @param {string} html - HTML string to strip
  * @param {number} limit - Character limit for the result

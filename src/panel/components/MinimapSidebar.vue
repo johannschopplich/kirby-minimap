@@ -53,7 +53,7 @@ const resolvedFields = computed(() =>
 );
 
 useEventListener(minimap, "click", (event) => {
-  // Prevent the click event from bubbling up to the menu
+  // Prevent the click event from bubbling up to the menu.
   // See: https://github.com/getkirby/kirby/blob/938fe98951cace6c77aab744779bf4e0799ad705/panel/src/panel/menu.js#L124
   event.stopPropagation();
 
@@ -72,7 +72,6 @@ watch(isOpen, (newValue) => {
   updateMinimapWidth(newValue);
 });
 
-// Watch for content changes to update observers for blocks
 watch(
   [currentContent, contentChanges],
   () => {
@@ -81,14 +80,12 @@ watch(
   { deep: true },
 );
 
-// Watch for navigation changes in the Panel
+// Watch for navigation changes in the Panel.
 watch(
   [() => panel.view.path, () => panel.view.props.tab],
   async () => {
-    // Clear existing observers before fetching new fields
     cleanupObservers();
 
-    // Refetch fields for new view
     await initializeMinimapContent();
   },
   { immediate: true },
@@ -96,7 +93,7 @@ watch(
 
 initializeMinimapUI();
 
-// Handle initialization of UI elements that only need to be set once
+// Sets up the UI elements that only need to be initialized once.
 function initializeMinimapUI() {
   updateMinimapWidth(isOpen.value);
 
@@ -109,15 +106,14 @@ function initializeMinimapUI() {
   setCssProperty("--minimap-top-offset", `${headerContentTop}px`);
 }
 
-// Fetch fields and set up observers for the current view
+// Fetches fields and sets up observers for the current view.
 async function initializeMinimapContent() {
   if (panel.view.path !== "site" && !panel.view.path.startsWith("pages/")) {
     return;
   }
 
-  // Ensure all Panel components are loaded before querying DOM elements
+  // Ensure all Panel components are loaded before querying DOM elements.
   if (panel.isLoading) {
-    // Wait for the Panel to finish loading
     await new Promise((resolve) => {
       const stop = watch(
         () => panel.isLoading,
@@ -139,7 +135,7 @@ async function initializeMinimapContent() {
 
   let filteredFields = modelFields;
 
-  // Filter fields based on current tab
+  // Filter fields based on current tab.
   if (panel.view.props.tabs && panel.view.props.tabs.length > 1) {
     const currentTabFieldNames = extractCurrentTabFieldNames();
 
@@ -150,7 +146,7 @@ async function initializeMinimapContent() {
     );
   }
 
-  // Remove excluded field types from the model fields
+  // Remove excluded field types from the model fields.
   for (const [key, field] of Object.entries(filteredFields)) {
     if (EXCLUDED_FIELD_TYPES.includes(field.type)) {
       delete filteredFields[key];
@@ -159,7 +155,7 @@ async function initializeMinimapContent() {
 
   fields.value = filteredFields;
 
-  // Set up observers for each field
+  // Set up observers for each field.
   for (const fieldName of Object.keys(fields.value)) {
     const fieldElement = document.querySelector(`.k-field-name-${fieldName}`);
     if (!fieldElement) continue;
@@ -175,11 +171,10 @@ async function initializeMinimapContent() {
     });
   }
 
-  // Initial setup of block observers
   updateBlockObservers();
 }
 
-// Clean up observers and reset tracking state to prevent memory leaks
+// Cleans up observers and resets tracking state to prevent memory leaks.
 function cleanupObservers() {
   if (!observer) return;
 
@@ -190,13 +185,13 @@ function cleanupObservers() {
   observedBlockIds.clear();
 }
 
-// Observe new blocks and unobserve deleted blocks
+// Observes new blocks and unobserves deleted blocks.
 function updateBlockObservers() {
   if (!observer) return;
 
   const currentBlockIds = new Set();
 
-  // Add observers for all blocks in all block fields
+  // Add observers for all blocks in all block fields.
   for (const field of Object.values(fields.value)) {
     if (field.type !== "blocks") continue;
 
@@ -225,7 +220,7 @@ function updateBlockObservers() {
     }
   }
 
-  // Unobserve and remove blocks that no longer exist
+  // Unobserve and remove blocks that no longer exist.
   const deletedBlockIds = [...observedBlockIds].filter(
     (id) => !currentBlockIds.has(id),
   );
@@ -285,7 +280,7 @@ function scrollToField(fieldName) {
     block: "center",
   });
 
-  // Close the mobile menu
+  // Close the mobile menu.
   // See: https://github.com/getkirby/kirby/blob/938fe98951cace6c77aab744779bf4e0799ad705/panel/src/panel/menu.js#L25
   if (window.matchMedia?.("(max-width: 60rem)").matches) {
     panel.menu.close();
