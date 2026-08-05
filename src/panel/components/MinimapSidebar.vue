@@ -100,13 +100,13 @@ initializeMinimapUI();
 function initializeMinimapUI() {
   updateMinimapWidth(isOpen.value);
 
-  // Get height from top of the page to the bottom of the header
+  // Align the minimap with the top of the header's content box, i.e. the view title.
   const header = document.querySelector(".k-header");
-  const bottomEdge = header
+  const headerContentTop = header
     ? header.getBoundingClientRect().top +
       Number.parseFloat(getComputedStyle(header).paddingTop)
     : 0;
-  setCssProperty("--minimap-top-offset", `${bottomEdge}px`);
+  setCssProperty("--minimap-top-offset", `${headerContentTop}px`);
 }
 
 // Fetch fields and set up observers for the current view
