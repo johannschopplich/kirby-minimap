@@ -2,15 +2,13 @@
 
 # Kirby Minimap
 
-A sidebar navigation for the Kirby Panel that provides a structured overview of all fields and blocks in the current Panel view.
-
-This is especially useful when working with complex page designs that contain many fields or long block fields. The minimap displays a compact navigation sidebar that highlights the current position in the content editor and allows you to quickly jump to any field or block.
+Kirby Minimap is a free plugin for [Kirby CMS](https://getkirby.com). Install it, and a structured sidebar appears next to the site view and every page view – no license activation, no setup. It lists the fields and blocks of the current Panel tab, marks the ones in view as you scroll, and scrolls to the one you click. Made for long blueprints.
 
 ## Features
 
-- 🖱️ **Field Navigation**: Click on any field or block to scroll to that position in the content editor
-- 🎬 **Block Preview**: For block fields, the minimap shows each block with its type icon and content preview
-- 🫴 **Automatic Highlighting**: The minimap automatically highlights your current position as you scroll through the Panel view
+- 🖱️ **Jump to a Field or Block**: Click an entry and the Panel scrolls it into the middle of the view, with a short pulse on blocks.
+- 🎬 **Blocks by Icon and First Words**: Blocks fields unfold into their blocks, each with the fieldset's icon and the first 50 characters of text.
+- 🫴 **See Where You Are**: Fields and blocks in view are marked in the sidebar as you scroll, and required fields carry a star. The sidebar collapses to a strip of dashes and remembers its state.
 
 ## Demo
 
