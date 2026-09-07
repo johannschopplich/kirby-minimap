@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier \"src/panel/**\" --write",
-    "release": "pnpm run build && bumpp --all --execute \"npx zx scripts/pre-release.mjs\""
+    "release": "pnpm run build && bumpp --all --execute \"npx zx scripts/pre-release.mjs\" && zx scripts/post-release.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
