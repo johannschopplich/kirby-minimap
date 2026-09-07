@@ -32,8 +32,6 @@ export function useEventListener(target, event, listener, options) {
   if (getCurrentScope()) {
     onScopeDispose(stop);
   }
-
-  return stop;
 }
 
 export function useIntersectionObserver(options = {}) {
@@ -73,22 +71,6 @@ export function useIntersectionObserver(options = {}) {
       observedElements.add(element);
       observer.observe(element);
     }
-
-    return () => {
-      if (element) {
-        observer?.unobserve(element);
-        observedElements.delete(element);
-        elements.delete(element);
-      }
-    };
-  };
-
-  const unobserve = (element) => {
-    if (element) {
-      observer?.unobserve(element);
-      observedElements.delete(element);
-      elements.delete(element);
-    }
   };
 
   if (getCurrentScope()) {
@@ -97,12 +79,11 @@ export function useIntersectionObserver(options = {}) {
 
   return {
     observe,
-    unobserve,
     disconnect: cleanup,
   };
 }
 
-export function unrefElement(elRef) {
+function unrefElement(elRef) {
   const plain = unref(elRef);
   return plain?.$el ?? plain;
 }

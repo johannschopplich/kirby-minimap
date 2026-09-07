@@ -1,5 +1,7 @@
 :root {
-  --minimap-width-closed: calc(1rem + 2 * var(--menu-padding));
+  --minimap-width-closed: calc(
+    var(--menu-toggle-width) + 2 * var(--menu-padding)
+  );
   --minimap-width-open: var(--menu-width-open);
   --minimap-width: var(--minimap-width-closed);
 }

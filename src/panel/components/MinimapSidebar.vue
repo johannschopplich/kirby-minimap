@@ -447,11 +447,6 @@ function scrollToField(fieldName) {
     opacity: 1;
   }
 
-  .k-panel-minimap-toggle:focus-visible .k-button-icon {
-    outline: var(--outline);
-    border-radius: var(--button-rounded);
-  }
-
   .k-panel-minimap-menu-item {
     border-inline-start-width: 1px;
   }
