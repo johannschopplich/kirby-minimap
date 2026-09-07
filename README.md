@@ -2,7 +2,7 @@
 
 # Kirby Minimap
 
-Kirby Minimap is a free plugin for [Kirby CMS](https://getkirby.com). Install it, and a structured sidebar appears next to the site view and every page view – no license activation, no setup. It lists the fields and blocks of the current Panel tab, marks the ones in view as you scroll, and scrolls to the one you click. Made for long blueprints.
+Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com). Install it, and a structured sidebar appears next to the site view and every page view – no license activation, no setup. It lists the fields and blocks of the current Panel tab, marks the ones in view as you scroll, and scrolls to the one you click. Made for long blueprints.
 
 ## Features
 
