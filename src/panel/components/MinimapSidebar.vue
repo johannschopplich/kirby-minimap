@@ -8,15 +8,30 @@ import {
 
 const EXCLUDED_FIELD_TYPES = ["gap", "hidden", "line"];
 const OPEN_STATE_STORAGE_KEY = "kirby$minimap";
+// Kirby's own menu breakpoint. It has no custom property for it, and a media
+// query could not read one anyway.
+// See: https://github.com/getkirby/kirby/blob/main/panel/src/components/View/Menu.vue
+const DESKTOP_MEDIA_QUERY = "(min-width: 60rem)";
 
 const panel = usePanel();
 const { currentContent, contentChanges } = useContent();
 const { getBlockIcon, extractBlockText, scrollToBlock } = useBlocks();
 
 const minimap = ref();
-const toggleButton = ref();
-const isOpen = ref(
+
+const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
+const isDesktop = ref(desktopMedia.matches);
+
+// Two states, because the minimap is two things. On desktop it is a sidebar
+// that is either expanded or a strip of dashes, and that choice is worth
+// remembering. Below the breakpoint it is an overlay over the view, which
+// starts closed on every load the way Kirby's mobile menu does.
+const isExpanded = ref(
   localStorage.getItem(OPEN_STATE_STORAGE_KEY) === "true" || false,
+);
+const isOverlayOpen = ref(false);
+const isOpen = computed(() =>
+  isDesktop.value ? isExpanded.value : isOverlayOpen.value,
 );
 
 const fields = ref({});
@@ -52,14 +67,12 @@ const resolvedFields = computed(() =>
   ),
 );
 
-useEventListener(minimap, "click", (event) => {
-  // Prevent the click event from bubbling up to the menu.
-  // See: https://github.com/getkirby/kirby/blob/938fe98951cace6c77aab744779bf4e0799ad705/panel/src/panel/menu.js#L124
-  event.stopPropagation();
+useEventListener(desktopMedia, "change", (event) => {
+  isDesktop.value = event.matches;
 
-  if (toggleButton.value?.$el.contains(event.target)) {
-    toggle();
-  }
+  // The header sits a few pixels lower once the topbar has room for the view
+  // buttons, so the offset the sidebar aligns to is measured per layout.
+  if (event.matches) nextTick(measureHeaderOffset);
 });
 
 const observer = useIntersectionObserver({
@@ -67,10 +80,23 @@ const observer = useIntersectionObserver({
   threshold: 0,
 });
 
-watch(isOpen, (newValue) => {
+watch(isExpanded, (newValue) => {
   localStorage.setItem(OPEN_STATE_STORAGE_KEY, newValue);
   updateMinimapWidth(newValue);
 });
+
+// One panel at a time: the overlay and Kirby's menu would otherwise share a
+// phone-width viewport between them and leave the view a sliver.
+watch(isOverlayOpen, (newValue) => {
+  if (newValue) panel.menu.close();
+});
+
+watch(
+  () => panel.menu.isOpen,
+  (newValue) => {
+    if (newValue) isOverlayOpen.value = false;
+  },
+);
 
 watch(
   [currentContent, contentChanges],
@@ -84,6 +110,7 @@ watch(
 watch(
   [() => panel.view.path, () => panel.view.props.tab],
   async () => {
+    isOverlayOpen.value = false;
     cleanupObservers();
 
     await initializeMinimapContent();
@@ -95,9 +122,12 @@ initializeMinimapUI();
 
 // Sets up the UI elements that only need to be initialized once.
 function initializeMinimapUI() {
-  updateMinimapWidth(isOpen.value);
+  updateMinimapWidth(isExpanded.value);
+  measureHeaderOffset();
+}
 
-  // Align the minimap with the top of the header's content box, i.e. the view title.
+// Align the minimap with the top of the header's content box, i.e. the view title.
+function measureHeaderOffset() {
   const header = document.querySelector(".k-header");
   const headerContentTop = header
     ? header.getBoundingClientRect().top +
@@ -237,7 +267,12 @@ function updateBlockObservers() {
 }
 
 function toggle() {
-  isOpen.value = !isOpen.value;
+  if (isDesktop.value) {
+    isExpanded.value = !isExpanded.value;
+    return;
+  }
+
+  isOverlayOpen.value = !isOverlayOpen.value;
 }
 
 function updateMinimapWidth(isOpen = false) {
@@ -271,7 +306,7 @@ function extractCurrentTabFieldNames() {
   return fieldNames;
 }
 
-function scrollToField(fieldName) {
+function jumpToField(fieldName) {
   const fieldElement = document.querySelector(`.k-field-name-${fieldName}`);
   if (!fieldElement) return;
 
@@ -280,16 +315,22 @@ function scrollToField(fieldName) {
     block: "center",
   });
 
-  // Close the mobile menu.
-  // See: https://github.com/getkirby/kirby/blob/938fe98951cace6c77aab744779bf4e0799ad705/panel/src/panel/menu.js#L25
-  if (window.matchMedia?.("(max-width: 60rem)").matches) {
-    panel.menu.close();
-  }
+  isOverlayOpen.value = false;
+}
+
+function jumpToBlock(blockId) {
+  scrollToBlock(blockId);
+  isOverlayOpen.value = false;
 }
 </script>
 
 <template>
-  <nav ref="minimap" class="k-panel-minimap">
+  <nav
+    ref="minimap"
+    class="k-panel-minimap"
+    :data-open="String(isOpen)"
+    @click.self="isOverlayOpen = false"
+  >
     <div class="k-panel-minimap-body">
       <menu>
         <template v-for="field in Object.values(resolvedFields)">
@@ -302,7 +343,7 @@ function scrollToField(fieldName) {
                   : 'km-py-[var(--spacing-3)]',
               ]"
               :data-active="String(field._active)"
-              @click="scrollToField(field.name)"
+              @click="jumpToField(field.name)"
             >
               <template v-if="isOpen">
                 <span class="k-label-text km-[font-weight:var(--font-semi)]">
@@ -324,7 +365,7 @@ function scrollToField(fieldName) {
                 :key="`${blockIndex}-${block.id}`"
                 class="k-panel-minimap-menu-item km-flex km-items-center km-gap-[var(--spacing-2)] km-py-[var(--spacing-1)]"
                 :data-active="String(block._active)"
-                @click="scrollToBlock(block.id)"
+                @click="jumpToBlock(block.id)"
               >
                 <k-icon :type="block._icon" />
                 <span class="k-label-text">
@@ -338,25 +379,54 @@ function scrollToField(fieldName) {
     </div>
 
     <k-button
-      ref="toggleButton"
       :icon="isOpen ? 'angle-right' : 'angle-left'"
       :title="isOpen ? panel.t('collapse') : panel.t('expand')"
       size="xs"
       class="k-panel-minimap-toggle"
+      @click="toggle"
     />
   </nav>
 </template>
 
 <style>
+/* What follows mirrors Kirby's own collapsible menu, selector for selector,
+   with the sides swapped. The comments below mark where the minimap parts ways
+   with it.
+
+   @see https://github.com/getkirby/kirby/blob/main/panel/src/components/View/Menu.vue */
+
+/* Diverges: Kirby toggles the menu through `--menu-display`, the minimap
+   through its width, so that the collapsed strip of dashes stays visible.
+   `--menu-shadow` holds here because Kirby resets it to `none` on `.k-panel`
+   inside the same breakpoint. */
 .k-panel-minimap {
   position: fixed;
   inset-inline-end: 0;
   inset-block: 0;
   z-index: var(--z-navigation);
-  display: var(--menu-display);
-  width: var(--minimap-width);
+  width: var(--minimap-width-overlay);
   background-color: var(--panel-color-back);
   box-shadow: var(--menu-shadow);
+}
+
+.k-panel-minimap[data-open="false"] {
+  width: 0;
+}
+
+.k-panel-minimap[data-open="false"] .k-panel-minimap-body {
+  display: none;
+}
+
+/* Diverges: Kirby puts the backdrop on `.k-panel::after` at `--z-drawer` and
+   makes it `pointer-events: none`. Ours is a child of the nav at `z-index: -1`,
+   so it covers the view, stays behind the panel itself, and still receives the
+   `@click.self` that closes the overlay. */
+.k-panel-minimap[data-open="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--overlay-color-back);
 }
 
 .k-panel-minimap-body {
@@ -369,15 +439,13 @@ function scrollToField(fieldName) {
 
 .k-panel-minimap-toggle {
   --button-align: flex-start;
-  --button-height: 100%;
   --button-width: var(--menu-toggle-width);
   position: absolute;
-  inset-block: 0;
+  inset-block-start: 0;
   inset-inline-end: 100%;
   align-items: flex-start;
   border-radius: 0;
   overflow: visible;
-  opacity: 0;
   transition: opacity 0.2s;
 }
 
@@ -398,11 +466,16 @@ function scrollToField(fieldName) {
   border-end-start-radius: var(--button-rounded);
 }
 
+/* Diverges: Kirby scopes this to the desktop query, where its own toggle is
+   the only one that exists. Ours is reachable on every width. */
 .k-panel-minimap-toggle:focus-visible .k-button-icon {
   outline: var(--outline);
   border-radius: var(--button-rounded);
 }
 
+/* Diverges: Kirby's menu rows are `.k-panel-menu-button`s, which carry a
+   background rather than an edge marker. `--menu-color-back` is Kirby's menu
+   surface, not a hover tint. */
 .k-panel-minimap-menu-item {
   cursor: pointer;
   border-inline-start-width: 2px;
@@ -419,6 +492,7 @@ function scrollToField(fieldName) {
   border-inline-start-color: var(--color-focus);
 }
 
+/* No counterpart in Kirby: the pulse a jumped-to block gets. */
 .k-panel-minimap-highlight {
   animation: highlight-pulse 2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -429,17 +503,46 @@ function scrollToField(fieldName) {
     box-shadow: none;
   }
   50% {
-    box-shadow: inset 0 0 0 2px var(--color-focus, currentColor);
+    box-shadow: inset 0 0 0 2px var(--color-focus);
   }
 }
 
 @media (min-width: 60rem) {
+  /* `--main-end` mirrors Kirby's `--main-start`, the space `.k-panel-main`
+     keeps clear for the menu; Kirby declares no such token. */
+  .k-panel {
+    --main-end: var(--minimap-width);
+  }
+
+  .k-panel-main {
+    margin-inline-end: var(--main-end);
+  }
+
   .k-panel-minimap {
+    width: var(--minimap-width);
     border-left: 1px solid var(--menu-color-border);
   }
 
+  .k-panel-minimap[data-open="false"] {
+    width: var(--minimap-width);
+  }
+
+  .k-panel-minimap[data-open="false"] .k-panel-minimap-body,
   .k-panel-minimap-body {
+    display: block;
     padding-top: calc(var(--minimap-top-offset) + var(--spacing-1));
+  }
+
+  .k-panel-minimap[data-open="true"]::before {
+    content: none;
+  }
+
+  /* Diverges: Kirby drives this from JS through a `data-hover` attribute,
+     noting that CSS `:hover` flickered; ours has not. */
+  .k-panel-minimap-toggle {
+    --button-height: 100%;
+    inset-block: 0;
+    opacity: 0;
   }
 
   .k-panel-minimap-toggle:focus-visible,

@@ -4,16 +4,7 @@
   );
   --minimap-width-open: var(--menu-width-open);
   --minimap-width: var(--minimap-width-closed);
-}
-
-/* The minimap only reserves space from the breakpoint where it is a sidebar
-   rather than an overlay, so the margin lives in the same query as the value. */
-@media (min-width: 60rem) {
-  .k-panel {
-    --main-end: var(--minimap-width);
-  }
-
-  .k-panel-main {
-    margin-inline-end: var(--main-end);
-  }
+  /* Wide enough that a field label is not truncated, capped so the view
+     behind the overlay stays visible. */
+  --minimap-width-overlay: min(24rem, 85vw);
 }
