@@ -34,7 +34,7 @@ Download and copy this repository to `/site/plugins/kirby-minimap`.
 
 ## Documentation
 
-For detailed usage instructions, visit the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
+For installation, configuration, and usage, see the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
 
 ## License
 
