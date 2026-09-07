@@ -28,7 +28,7 @@ export function useBlocks() {
    * @returns {string} - The icon name to use
    */
   function getBlockIcon(type, field) {
-    return field.fieldsets[type].icon || (BLOCK_ICON_MAP[type] ?? "box");
+    return field.fieldsets[type]?.icon || (BLOCK_ICON_MAP[type] ?? "box");
   }
 
   /**
@@ -78,7 +78,7 @@ export function useBlocks() {
         return panel.t("field.blocks.table.name");
       default:
         return (
-          field.fieldsets[type].name ||
+          field.fieldsets[type]?.name ||
           type.charAt(0).toUpperCase() + type.slice(1)
         );
     }

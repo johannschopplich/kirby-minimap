@@ -355,7 +355,7 @@ function scrollToField(fieldName) {
   z-index: var(--z-navigation);
   display: var(--menu-display);
   width: var(--minimap-width);
-  background-color: var(--color-background);
+  background-color: var(--panel-color-back);
   box-shadow: var(--menu-shadow);
 }
 
@@ -393,7 +393,7 @@ function scrollToField(fieldName) {
   margin-top: var(--menu-padding);
   border-block: 1px solid var(--menu-color-border);
   border-inline-start: 1px solid var(--menu-color-border);
-  background: var(--color-background);
+  background: var(--panel-color-back);
   border-start-start-radius: var(--button-rounded);
   border-end-start-radius: var(--button-rounded);
 }
