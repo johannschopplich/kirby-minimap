@@ -97,14 +97,6 @@ export function useIntersectionObserver(
     observer = undefined;
   };
 
-  const unobserve = (element: Element | undefined | null) => {
-    if (!element) return;
-
-    observer?.unobserve(element);
-    observedElements.delete(element);
-    callbacks.delete(element);
-  };
-
   const observe = (
     element: Element | undefined | null,
     callback: (isIntersecting: boolean) => void,
@@ -118,11 +110,27 @@ export function useIntersectionObserver(
       { root, rootMargin, threshold },
     );
 
+    if (element) {
+      callbacks.set(element, callback);
+      observedElements.add(element);
+      observer.observe(element);
+    }
+
+    return () => {
+      if (element) {
+        observer?.unobserve(element);
+        observedElements.delete(element);
+        callbacks.delete(element);
+      }
+    };
+  };
+
+  const unobserve = (element: Element | undefined | null) => {
     if (!element) return;
 
-    callbacks.set(element, callback);
-    observedElements.add(element);
-    observer.observe(element);
+    observer?.unobserve(element);
+    observedElements.delete(element);
+    callbacks.delete(element);
   };
 
   if (getCurrentScope()) {
