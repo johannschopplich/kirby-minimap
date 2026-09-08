@@ -1,10 +1,6 @@
 import type { KirbyAnyFieldProps, KirbyBlockValue } from "kirby-types";
 import { usePanel } from "kirbyuse";
-import {
-  BLOCK_ANIMATION_CLASS,
-  BLOCK_ANIMATION_DURATION,
-  BLOCK_ICON_MAP,
-} from "../constants";
+import { BLOCK_ANIMATION_CLASS, BLOCK_ICON_MAP } from "../constants";
 
 export function useBlocks() {
   const panel = usePanel();
@@ -80,9 +76,9 @@ export function useBlocks() {
     });
 
     blockElement.classList.add(BLOCK_ANIMATION_CLASS);
-    setTimeout(() => {
-      blockElement.classList.remove(BLOCK_ANIMATION_CLASS);
-    }, BLOCK_ANIMATION_DURATION);
+    Promise.allSettled(
+      blockElement.getAnimations().map((animation) => animation.finished),
+    ).then(() => blockElement.classList.remove(BLOCK_ANIMATION_CLASS));
   }
 
   return {

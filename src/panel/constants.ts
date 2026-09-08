@@ -30,7 +30,4 @@ export const BLOCK_ICON_MAP: Record<string, string> = {
 
 export const BLOCK_ANIMATION_CLASS = "k-panel-minimap-highlight";
 
-/** How long the pulse on a jumped-to block runs, matching the CSS animation. */
-export const BLOCK_ANIMATION_DURATION = 2000;
-
 export const BLOCK_TEXT_LIMIT = 50;
