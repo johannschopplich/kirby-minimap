@@ -1,5 +1,17 @@
-title: Playground
+title: Kunsthalle Leipzig
 
 sections:
+  details:
+    type: fields
+    fields:
+      museumName:
+        label: Museum Name
+        type: text
+      openingHours:
+        label: Opening Hours
+        type: text
+
   pages:
     type: pages
+    templates:
+      - default

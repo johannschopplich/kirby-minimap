@@ -1,1 +1,9 @@
-Title: Playground
+Title: Kunsthalle Leipzig
+
+----
+
+Museumname: Kunsthalle Leipzig
+
+----
+
+Openinghours: Tuesday to Sunday, 11 am to 6 pm

@@ -1,48 +1,32 @@
-Title: Home
+Title: Luise Frey: Rooms of Silence
 
 ----
 
-Cover: 
+Text: [{"content": {"level": "h2", "text": "Rooms After Everyone Has Left"}, "id": "5a2c1ca6-30ca-45b9-98c8-abc23e5062c4", "isHidden": false, "type": "heading"}, {"content": {"text": "<p>Luise Frey photographs rooms after everyone has left them: a school gym on the first morning of the holidays, a ferry terminal at four in the morning, the back office of a shop that closed last spring.</p>"}, "id": "77806509-a02e-41ca-b092-9cbb203c479f", "isHidden": false, "type": "text"}, {"content": {"text": "<p>I wait until the dust has settled inside the frame.</p>", "citation": "Luise Frey"}, "id": "2f7befe9-0309-413c-8007-a04f59d4e8ea", "isHidden": false, "type": "quote"}, {"content": {"text": "<ul><li>Twenty-eight prints, made over six winters</li><li>Northern Germany and the Faroe Islands</li><li>Large-format camera, available light</li></ul>"}, "id": "8133fb9d-fa14-4606-9c9c-08d37bf71937", "isHidden": false, "type": "list"}, {"content": {}, "id": "6f076ef9-6964-4e41-b625-c3edfbf48200", "isHidden": false, "type": "line"}, {"content": {"text": "Press images are available on request. A conversation with the artist takes place on 14 November at 7 pm, admission free."}, "id": "320bead6-e0f4-43ae-9a44-c36ede487065", "isHidden": false, "type": "markdown"}]
 
 ----
 
-Date: 
+Description: Twenty-eight large-format photographs of rooms just after the people have gone. Leipzig, 12 September to 30 November.
 
 ----
 
-Author: 
+Dates: 12 September – 30 November
 
 ----
 
-Tags: 
+Keywords: photography, exhibition, large format
 
 ----
 
-Blocks: [{"content":{"level":"h1","text":"A powerful platform: Kirby is built with flexibility and extensibility in mind"},"id":"888a3377-a861-4a8d-80c2-362b3a3bbd55","isHidden":false,"type":"heading"},{"content":{"level":"h2","text":"A reliable tech stack"},"id":"e1c76310-573c-47c8-8db3-3b71fcca7583","isHidden":false,"type":"heading"},{"content":{"text":"<p>Performant, well-tested and cost‑effective</p>"},"id":"6ef985c7-5858-4026-8c95-c8e82552dc87","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"Modern PHP"},"id":"48c58ea6-6a5f-4ded-913d-8a7f8c728052","isHidden":false,"type":"heading"},{"content":{"text":"<p>Kirby is built on our own PHP  micro-framework and can be combined with your favorite PHP libraries.  Tested and continously improved over more than 10 years, it fully  leverages the power of modern PHP. With over 6,200 automated tests with a  code coverage of 95% across the entire CMS backend and more than 80  stable releases since 3.0, we invest heavily into the quality of our  foundation.\t  \t\t\t</p>"},"id":"4d23c48f-65a2-4abf-9889-7a2dbc7f76b0","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"<a href=\"https://lab.getkirby.com\" rel=\"noreferrer\">Admin interface framework →</a>"},"id":"50da66c0-2825-45d3-aac0-dbb3986fda8d","isHidden":false,"type":"heading"},{"content":{"text":"<p>Our admin interface is built on Vue.js.  It's a playground for your ideas. Extend it with plugins and make it  your own with the full power of Vue and an incredibly powerful backend.</p>"},"id":"298ec3d9-bfa2-4908-8e81-22f08c23f6a5","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"Your frontend"},"id":"f404f654-68cc-4335-b592-505a3c699ec4","isHidden":false,"type":"heading"},{"content":{"text":"<p>Every project is different, every team and  freelancer have their own tools and workflows. With Kirby, you use your  own frontend code, your own build process, your own framework. Kirby  stays out of your way.</p>"},"id":"bbc3d217-5aa9-47ec-ba97-f374d6c7a45d","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"<a href=\"https://github.com/getkirby\" rel=\"noreferrer\">Sustainable open-source →</a>"},"id":"a219be48-2210-4351-91e5-a0fe3861fc67","isHidden":false,"type":"heading"},{"content":{"text":"<p>Yes, Kirby has a commercial license that's \nbeen keeping us running since 2012. But we believe in the transparency \nof open-source. Kirby's complete code base is available on GitHub, not \nhidden behind a paywall. No obfuscation, no secrets. You only need to \npay when you're actually going live with a Kirby project.</p>"},"id":"f5a0fd2f-158b-4663-b45a-700829c18c76","isHidden":false,"type":"text"},{"content":{"level":"h2","text":"Templating"},"id":"80c3776a-f182-4d37-946f-cc6b6ad33f13","isHidden":false,"type":"heading"},{"content":{"text":"<p>Stay in control of your markup.<br>Keep your projects lean.</p><p>Kirby comes with a powerful PHP-based template engine. Optimized  for speed and equipped with an ultra flexible and intuitive PHP API, you  can build your perfect frontend the way you like.</p>"},"id":"dfc32a04-78d5-4e67-af74-5308e365da47","isHidden":false,"type":"text"},{"content":{"code":"<?php snippet('header') ?>\n\n<article class=\"album\">\n  <h1><?= $page->title() ?></h1>\n  <figure class=\"cover\">\n    <?= $cover->resize(800, 600) ?>\n  </figure>\n  <div class=\"text\">\n    <?= $page->text()->kirbytext() ?>\n  </div>\n  <ul class=\"gallery\">\n    <?php foreach ($gallery as $image): ?>\n    <li><?= $image->crop(300) ?></li>\n    <?php endforeach ?>\n  </ul>\n</article>\n\n<?php snippet('footer') ?>","language":"php"},"id":"682e43e6-f3c1-4c41-99d3-4075a67c264a","isHidden":false,"type":"code"},{"content":{"text":"<ul><li><a href=\"https://getkirby.com/docs/guide/templates/controllers\" rel=\"noreferrer\">Controllers &rarr;</a>\n<p>Complex logic? Use Kirby&rsquo;s controllers to filter data collections based\n on URL query parameters, handle forms, do date-based calculations and \nmore without cluttering your templates. Marie Kondō agrees.</p></li><li><a href=\"https://getkirby.com/docs/guide/templates/page-models\" rel=\"noreferrer\">Models &rarr;</a>\n<p>Super-charge your pages with additional functionalities. Page models \nextend our default page class and offer unlimited opportunities to \ncustomize what a page represents.</p></li><li><a href=\"https://getkirby.com/docs/guide/templates/collections\" rel=\"noreferrer\">Collections &rarr;</a>\n<p>Keep your code DRY with collections. Featured articles, upcoming \nevents, team members &ndash; create reusable collections that you can use \neverywhere.</p></li><li><a href=\"https://getkirby.com/docs/reference/plugins/components/template\" rel=\"noreferrer\">Bring your own engine &rarr;</a>\n<p>Your team is familiar with Twig, Blade or your own template engine? No \nproblem! Our engine can be swapped using a template plugin, or you can \ncreate your own.</p></li></ul>"},"id":"457dd0c6-e112-4614-baf7-5ce94c8cfb67","isHidden":false,"type":"list"},{"content":{"level":"h2","text":"Security"},"id":"e1e71ea3-863c-4554-94ac-fa05cc3ea028","isHidden":false,"type":"heading"},{"content":{"text":"<p>A pro-active policy and good track record</p>"},"id":"014727f1-7a10-49b4-93aa-2ed35c2b70d5","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"A secure foundation"},"id":"cb2a7a49-d0d8-467d-b78f-fd2095433cf9","isHidden":false,"type":"heading"},{"content":{"text":"<p>Kirby is built on a modern, secure stack with state-of-the-art \nPHP and Vue.js at its core. We follow OWASP standards closely for \neverything we build. Our file-based architecture eliminates one of the \nmain attack vectors of content management systems – SQL injections. \nKirby can easily be set up to run without an admin interface or external\n API for even tighter security on your production server.</p>"},"id":"e4df5713-c719-4537-b3d4-732d005293bb","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"<a href=\"https://getkirby.com/security\" rel=\"noreferrer\">A good track record →</a>"},"id":"9554c0f8-03da-4f15-bbcb-48d0ff1f3003","isHidden":false,"type":"heading"},{"content":{"text":"<p>Kirby is constantly audited by security researchers for big \nclient projects. We are very transparent with their findings and \npossible security incidents. You can find past security incidents on our\n security page.</p>\n\t\t\t\t<p>Our response time for vulnerability reports is normally within 24\n hours. We react immediately and communicate issues clearly and openly \nto our community.</p>"},"id":"b4919639-07de-40b0-b671-a19da8b07284","isHidden":false,"type":"text"},{"content":{"level":"h3","text":"<a href=\"https://getkirby.com/docs/guide/kirby-and-privacy\" rel=\"noreferrer\">A focus on privacy →</a>"},"id":"bda3a3dc-3329-4348-bc04-bfe2031560dc","isHidden":false,"type":"heading"},{"content":{"text":"<p>Kirby is GDPR (DSGVO) compliant by default. Your sites don’t include tracking code or set cookies unless you want them to.</p>\n\t\t\t\t<p>As a self-hosted software, your clients own their content and you don’t operate a black box.</p>"},"id":"578e6b76-d234-4c4b-bfc6-3b90a687463d","isHidden":false,"type":"text"}]
+Admission: true
 
 ----
 
-Text: Some content.
+Cataloguepages: 96
 
 ----
 
-Textarea: 
-
-----
-
-Toggle: false
-
-----
-
-Number: 
-
-----
-
-Select: 
-
-----
-
-Structure: 
+Presscontacts: [{"name": "Anke Wehmeyer", "email": "presse@kunsthalle-leipzig.de"}, {"name": "Tobias Krenz", "email": "tobias.krenz@kunsthalle-leipzig.de"}]
 
 ----
 
