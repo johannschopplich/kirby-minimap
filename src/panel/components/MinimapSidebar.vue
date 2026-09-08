@@ -286,6 +286,9 @@ function setCssProperty(property, value) {
   document.documentElement.style.setProperty(property, value);
 }
 
+// The API keys its fields the way Kirby stores content, in lower case, while
+// the view props keep the blueprint's spelling. A camel-cased field name would
+// otherwise match nothing and drop out of the list.
 function extractCurrentTabFieldNames() {
   const fieldNames = new Set();
 
@@ -298,7 +301,7 @@ function extractCurrentTabFieldNames() {
       if (section.type !== "fields") continue;
 
       for (const field of Object.values(section.fields)) {
-        fieldNames.add(field.name);
+        fieldNames.add(field.name.toLowerCase());
       }
     }
   }
