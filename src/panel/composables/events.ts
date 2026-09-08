@@ -125,7 +125,7 @@ export function useIntersectionObserver(
     };
   };
 
-  const unobserve = (element: Element | undefined | null) => {
+  const unobserve = (element?: Element | null) => {
     if (!element) return;
 
     observer?.unobserve(element);
