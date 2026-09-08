@@ -1,71 +1,66 @@
 <script setup lang="ts">
-import type {
-  MinimapField,
-  MinimapModelField,
-  MinimapViewColumn,
-  MinimapViewTab,
-} from "../types";
+import type { KirbyAnyFieldProps } from "kirby-types";
+import type { ResolvedField } from "../types";
 import { computed, nextTick, ref, useContent, usePanel, watch } from "kirbyuse";
 import { useBlocks } from "../composables/blocks";
 import {
   useEventListener,
   useIntersectionObserver,
 } from "../composables/events";
+import { useModelFields } from "../composables/model-fields";
 import {
+  BLOCK_TEXT_LIMIT,
   DESKTOP_MEDIA_QUERY,
   EXCLUDED_FIELD_TYPES,
   OPEN_STATE_STORAGE_KEY,
-  PLUGIN_MODEL_FIELDS_API_ROUTE,
 } from "../constants";
 
 const panel = usePanel();
 const { currentContent, contentChanges } = useContent();
 const { getBlockIcon, extractBlockText, scrollToBlock } = useBlocks();
-
-const minimap = ref<HTMLElement>();
+const { getModelFields } = useModelFields();
 
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
 const isDesktop = ref(desktopMedia.matches);
 
-// Two states, because the minimap is two things. On desktop it is a sidebar
-// that is either expanded or a strip of dashes, and that choice is worth
-// remembering. Below the breakpoint it is an overlay over the view, which
-// starts closed on every load the way Kirby's mobile menu does.
-const isExpanded = ref(
-  localStorage.getItem(OPEN_STATE_STORAGE_KEY) === "true" || false,
-);
+const isExpanded = ref(localStorage.getItem(OPEN_STATE_STORAGE_KEY) === "true");
 const isOverlayOpen = ref(false);
 const isOpen = computed(() =>
   isDesktop.value ? isExpanded.value : isOverlayOpen.value,
 );
 
-const fields = ref<Record<string, MinimapModelField>>({});
+const fields = ref<Record<string, KirbyAnyFieldProps>>({});
 const activeFieldNames = ref<string[]>([]);
 const activeBlockIds = ref<string[]>([]);
 const observedBlockIds = new Set<string>();
 
-const resolvedFields = computed<Record<string, MinimapField>>(() =>
+const observer = useIntersectionObserver({
+  rootMargin: "0px",
+  threshold: 0,
+});
+
+const resolvedFields = computed<Record<string, ResolvedField>>(() =>
   Object.fromEntries(
-    Object.entries(fields.value).map(([key, field]) => {
-      const content = contentChanges.value[key] ?? currentContent.value[key];
+    Object.entries(fields.value).map(([name, field]) => {
+      const content = contentChanges.value[name] ?? currentContent.value[name];
       const blocks =
         field.type === "blocks" && Array.isArray(content)
           ? content
               .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
               .map((block) => ({
                 ...block,
-                _icon: getBlockIcon(block.type, field),
-                _text: extractBlockText(block, field),
-                _active: activeBlockIds.value.includes(block.id),
+                icon: getBlockIcon(block.type, field),
+                text: extractBlockText(block, field).slice(0, BLOCK_TEXT_LIMIT),
+                isActive: activeBlockIds.value.includes(block.id),
               }))
           : [];
 
       return [
-        key,
+        name,
         {
           ...field,
           blocks,
-          _active: activeFieldNames.value.includes(field.name),
+          isActive: activeFieldNames.value.includes(name),
         },
       ];
     }),
@@ -80,14 +75,9 @@ useEventListener(desktopMedia, "change", (event) => {
   if (event.matches) nextTick(measureHeaderOffset);
 });
 
-const observer = useIntersectionObserver({
-  rootMargin: "0px",
-  threshold: 0,
-});
-
 watch(isExpanded, (newValue) => {
   localStorage.setItem(OPEN_STATE_STORAGE_KEY, String(newValue));
-  updateMinimapWidth(newValue);
+  updateMinimapWidth();
 });
 
 // One panel at a time: the overlay and Kirby's menu would otherwise share a
@@ -111,7 +101,6 @@ watch(
   { deep: true },
 );
 
-// Watch for navigation changes in the Panel.
 watch(
   [() => panel.view.path, () => panel.view.props.tab],
   async () => {
@@ -123,15 +112,9 @@ watch(
   { immediate: true },
 );
 
-initializeMinimapUI();
+updateMinimapWidth();
+measureHeaderOffset();
 
-// Sets up the UI elements that only need to be initialized once.
-function initializeMinimapUI() {
-  updateMinimapWidth(isExpanded.value);
-  measureHeaderOffset();
-}
-
-// Align the minimap with the top of the header's content box, i.e. the view title.
 function measureHeaderOffset() {
   const header = document.querySelector(".k-header");
   const headerContentTop = header
@@ -141,13 +124,11 @@ function measureHeaderOffset() {
   setCssProperty("--minimap-top-offset", `${headerContentTop}px`);
 }
 
-// Fetches fields and sets up observers for the current view.
 async function initializeMinimapContent() {
   if (panel.view.path !== "site" && !panel.view.path.startsWith("pages/")) {
     return;
   }
 
-  // Ensure all Panel components are loaded before querying DOM elements.
   if (panel.isLoading) {
     await new Promise<void>((resolve) => {
       const stop = watch(
@@ -160,59 +141,13 @@ async function initializeMinimapContent() {
     });
   }
 
-  const modelFields = await panel.api.get<Record<string, MinimapModelField>>(
-    PLUGIN_MODEL_FIELDS_API_ROUTE,
-    { id: panel.view.path },
-    undefined,
-    // Silent
-    true,
-  );
+  fields.value = await getModelFields();
 
-  let filteredFields = modelFields;
-
-  // Filter fields based on current tab.
-  if (panel.view.props.tabs && panel.view.props.tabs.length > 1) {
-    const currentTabFieldNames = extractCurrentTabFieldNames();
-
-    filteredFields = Object.fromEntries(
-      Object.entries(modelFields).filter(([key]) =>
-        currentTabFieldNames.has(key),
-      ),
-    );
-  }
-
-  // Remove excluded field types from the model fields.
-  for (const [key, field] of Object.entries(filteredFields)) {
-    if (EXCLUDED_FIELD_TYPES.has(field.type)) {
-      delete filteredFields[key];
-    }
-  }
-
-  fields.value = filteredFields;
-
-  // Set up observers for each field.
-  for (const fieldName of Object.keys(fields.value)) {
-    const fieldElement = document.querySelector(`.k-field-name-${fieldName}`);
-    if (!fieldElement) continue;
-
-    observer.observe(fieldElement, (isIntersecting) => {
-      if (isIntersecting) {
-        activeFieldNames.value.push(fieldName);
-      } else {
-        activeFieldNames.value = activeFieldNames.value.filter(
-          (name) => name !== fieldName,
-        );
-      }
-    });
-  }
-
+  observeFields();
   updateBlockObservers();
 }
 
-// Cleans up observers and resets tracking state to prevent memory leaks.
 function cleanupObservers() {
-  if (!observer) return;
-
   observer.disconnect();
 
   activeFieldNames.value = [];
@@ -220,54 +155,72 @@ function cleanupObservers() {
   observedBlockIds.clear();
 }
 
-// Observes new blocks and unobserves deleted blocks.
-function updateBlockObservers() {
-  if (!observer) return;
+function observeFields() {
+  for (const name of Object.keys(fields.value)) {
+    const fieldElement = document.querySelector(`.k-field-name-${name}`);
+    if (!fieldElement) continue;
 
+    observer.observe(fieldElement, (isIntersecting) => {
+      if (isIntersecting) {
+        activeFieldNames.value.push(name);
+      } else {
+        activeFieldNames.value = activeFieldNames.value.filter(
+          (activeName) => activeName !== name,
+        );
+      }
+    });
+  }
+}
+
+function updateBlockObservers() {
   const currentBlockIds = new Set<string>();
 
-  // Add observers for all blocks in all block fields.
-  for (const field of Object.values(fields.value)) {
+  for (const [name, field] of Object.entries(fields.value)) {
     if (field.type !== "blocks") continue;
 
-    const content =
-      contentChanges.value[field.name] ?? currentContent.value[field.name];
+    const content = contentChanges.value[name] ?? currentContent.value[name];
     if (!Array.isArray(content)) continue;
 
     for (const block of content) {
       currentBlockIds.add(block.id);
-      if (observedBlockIds.has(block.id)) continue;
-
-      const blockElement = document.querySelector(`[data-id="${block.id}"]`);
-      if (!blockElement) continue;
-
-      observer.observe(blockElement, (isIntersecting) => {
-        if (isIntersecting) {
-          activeBlockIds.value.push(block.id);
-        } else {
-          activeBlockIds.value = activeBlockIds.value.filter(
-            (id) => id !== block.id,
-          );
-        }
-      });
-
-      observedBlockIds.add(block.id);
+      observeBlock(block.id);
     }
   }
 
-  // Unobserve and remove blocks that no longer exist.
+  unobserveDeletedBlocks(currentBlockIds);
+}
+
+function observeBlock(blockId: string) {
+  if (observedBlockIds.has(blockId)) return;
+
+  const blockElement = document.querySelector(`[data-id="${blockId}"]`);
+  if (!blockElement) return;
+
+  observer.observe(blockElement, (isIntersecting) => {
+    if (isIntersecting) {
+      activeBlockIds.value.push(blockId);
+    } else {
+      activeBlockIds.value = activeBlockIds.value.filter(
+        (activeId) => activeId !== blockId,
+      );
+    }
+  });
+
+  observedBlockIds.add(blockId);
+}
+
+function unobserveDeletedBlocks(currentBlockIds: Set<string>) {
   const deletedBlockIds = [...observedBlockIds].filter(
     (id) => !currentBlockIds.has(id),
   );
+  if (!deletedBlockIds.length) return;
 
-  if (deletedBlockIds.length) {
-    activeBlockIds.value = activeBlockIds.value.filter(
-      (activeId) => !deletedBlockIds.includes(activeId),
-    );
+  activeBlockIds.value = activeBlockIds.value.filter(
+    (activeId) => !deletedBlockIds.includes(activeId),
+  );
 
-    for (const id of deletedBlockIds) {
-      observedBlockIds.delete(id);
-    }
+  for (const id of deletedBlockIds) {
+    observedBlockIds.delete(id);
   }
 }
 
@@ -280,39 +233,17 @@ function toggle() {
   isOverlayOpen.value = !isOverlayOpen.value;
 }
 
-function updateMinimapWidth(isOpen = false) {
+function updateMinimapWidth() {
   setCssProperty(
     "--minimap-width",
-    isOpen ? "var(--minimap-width-open)" : "var(--minimap-width-closed)",
+    isExpanded.value
+      ? "var(--minimap-width-open)"
+      : "var(--minimap-width-closed)",
   );
 }
 
 function setCssProperty(property: string, value: string) {
   document.documentElement.style.setProperty(property, value);
-}
-
-// The API keys its fields the way Kirby stores content, in lower case, while
-// the view props keep the blueprint's spelling. A camel-cased field name would
-// otherwise match nothing and drop out of the list.
-function extractCurrentTabFieldNames() {
-  const fieldNames = new Set<string>();
-
-  const tab = panel.view.props.tab as MinimapViewTab;
-  const columns: MinimapViewColumn[] = Array.isArray(tab.columns)
-    ? tab.columns
-    : Object.values(tab.columns);
-
-  for (const column of columns) {
-    for (const section of Object.values(column.sections)) {
-      if (section.type !== "fields") continue;
-
-      for (const field of Object.values(section.fields ?? {})) {
-        fieldNames.add(field.name.toLowerCase());
-      }
-    }
-  }
-
-  return fieldNames;
 }
 
 function jumpToField(fieldName: string) {
@@ -335,7 +266,6 @@ function jumpToBlock(blockId: string) {
 
 <template>
   <nav
-    ref="minimap"
     class="k-panel-minimap"
     :data-open="String(isOpen)"
     @click.self="isOverlayOpen = false"
@@ -351,7 +281,7 @@ function jumpToBlock(blockId: string) {
                   ? 'km-py-[var(--spacing-2)]'
                   : 'km-py-[var(--spacing-3)]',
               ]"
-              :data-active="String(field._active)"
+              :data-active="String(field.isActive)"
               @click="jumpToField(field.name)"
             >
               <template v-if="isOpen">
@@ -373,12 +303,12 @@ function jumpToBlock(blockId: string) {
                 v-for="(block, blockIndex) in field.blocks"
                 :key="`${blockIndex}-${block.id}`"
                 class="k-panel-minimap-menu-item km-flex km-items-center km-gap-[var(--spacing-2)] km-py-[var(--spacing-1)]"
-                :data-active="String(block._active)"
+                :data-active="String(block.isActive)"
                 @click="jumpToBlock(block.id)"
               >
-                <k-icon :type="block._icon" />
+                <k-icon :type="block.icon" />
                 <span class="k-label-text">
-                  {{ block._text }}
+                  {{ block.text }}
                 </span>
               </div>
             </template>

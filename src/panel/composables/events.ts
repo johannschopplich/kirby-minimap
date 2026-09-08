@@ -76,15 +76,13 @@ export interface IntersectionObserverOptions {
 
 /**
  * Watches any number of elements with a single observer, each with its own
- * callback, and disconnects when the surrounding effect scope is disposed. The
- * sidebar tracks every field and block of a view at once, which one observer
- * does in one callback rather than one per element.
+ * callback, and disconnects when the surrounding effect scope is disposed.
  */
 export function useIntersectionObserver(
   options: IntersectionObserverOptions = {},
 ) {
   const callbacks = new WeakMap<Element, (isIntersecting: boolean) => void>();
-  // Track observed elements separately, since `WeakMap` has no way to get keys.
+  // A `WeakMap` cannot list its keys, so the observed elements need their own set.
   const observedElements = new Set<Element>();
   let observer: IntersectionObserver | undefined;
 

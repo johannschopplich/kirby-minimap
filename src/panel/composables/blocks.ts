@@ -1,19 +1,19 @@
-import type { KirbyBlockValue } from "kirby-types";
-import type { MinimapModelField } from "../types";
+import type { KirbyAnyFieldProps, KirbyBlockValue } from "kirby-types";
 import { usePanel } from "kirbyuse";
 import {
   BLOCK_ANIMATION_CLASS,
   BLOCK_ANIMATION_DURATION,
   BLOCK_ICON_MAP,
-  BLOCK_TEXT_LIMIT,
 } from "../constants";
 
 export function useBlocks() {
   const panel = usePanel();
 
-  /** Returns the icon for a block type, preferring the one its fieldset declares. */
-  function getBlockIcon(type: string, field: MinimapModelField): string {
-    return field.fieldsets?.[type]?.icon || (BLOCK_ICON_MAP[type] ?? "box");
+  function getBlockIcon(type: string, field: KirbyAnyFieldProps): string {
+    const fieldsetIcon =
+      "fieldsets" in field ? field.fieldsets?.[type]?.icon : undefined;
+
+    return fieldsetIcon || (BLOCK_ICON_MAP[type] ?? "box");
   }
 
   /**
@@ -22,7 +22,7 @@ export function useBlocks() {
    */
   function extractBlockText(
     block: KirbyBlockValue,
-    field: MinimapModelField,
+    field: KirbyAnyFieldProps,
   ): string {
     const { content, type } = block;
 
@@ -58,15 +58,16 @@ export function useBlocks() {
         return panel.t("field.blocks.list.name");
       case "table":
         return panel.t("field.blocks.table.name");
-      default:
-        return (
-          field.fieldsets?.[type]?.name ||
-          type.charAt(0).toUpperCase() + type.slice(1)
-        );
+      default: {
+        const fieldsetName =
+          "fieldsets" in field ? field.fieldsets?.[type]?.name : undefined;
+
+        return fieldsetName || type.charAt(0).toUpperCase() + type.slice(1);
+      }
     }
   }
 
-  /** Scrolls a block into view and pulses a highlight on it. */
+  /** Pulses a highlight on the block after scrolling to it. */
   function scrollToBlock(blockId: string) {
     if (!blockId) return;
 
@@ -91,9 +92,8 @@ export function useBlocks() {
   };
 }
 
-/** Strips HTML tags from a string and cuts it to the sidebar's limit. */
-function stripHtml(html: string | undefined, limit = BLOCK_TEXT_LIMIT): string {
+function stripHtml(html: string | undefined): string {
   if (!html) return "";
-  const text = html.replace(/<[^>]*>/g, "");
-  return text.slice(0, limit);
+
+  return html.replace(/<[^>]*>/g, "");
 }

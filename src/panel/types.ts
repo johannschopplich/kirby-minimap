@@ -1,42 +1,34 @@
 import type {
+  KirbyAnyFieldProps,
   KirbyBlockValue,
   KirbyFieldProps,
-  KirbyFieldsetProps,
 } from "kirby-types";
 
-/**
- * A field as the `__minimap__/model-fields` API endpoint returns it: Kirby's
- * own field props, with the fieldsets a blocks field carries.
- */
-export interface MinimapModelField extends KirbyFieldProps {
-  fieldsets?: Record<string, KirbyFieldsetProps>;
+export interface ResolvedBlock extends KirbyBlockValue {
+  icon: string;
+  text: string;
+  isActive: boolean;
 }
 
-/** A block with what the sidebar resolves for its own entry. */
-export interface MinimapBlock extends KirbyBlockValue {
-  _icon: string;
-  _text: string;
-  _active: boolean;
-}
-
-export interface MinimapField extends MinimapModelField {
-  blocks: MinimapBlock[];
-  _active: boolean;
-}
+/** `blocks` is empty for every field type but `blocks`. */
+export type ResolvedField = KirbyAnyFieldProps & {
+  blocks: ResolvedBlock[];
+  isActive: boolean;
+};
 
 /**
- * The slice of a view's tab props the sidebar reads. Kirby types `panel.view.props`
- * as a bag of `any`, so the shape lives here.
+ * The slice of a view's tab props the sidebar reads. Kirby types
+ * `panel.view.props` as a bag of `any`, so the shape lives here.
  */
-export interface MinimapViewTab {
-  columns: MinimapViewColumn[] | Record<string, MinimapViewColumn>;
+export interface PanelViewTab {
+  columns: PanelViewColumn[] | Record<string, PanelViewColumn>;
 }
 
-export interface MinimapViewColumn {
-  sections: Record<string, MinimapViewSection>;
+export interface PanelViewColumn {
+  sections: Record<string, PanelViewSection>;
 }
 
-export interface MinimapViewSection {
+export interface PanelViewSection {
   type: string;
   fields?: Record<string, KirbyFieldProps>;
 }
