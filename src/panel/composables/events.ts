@@ -97,6 +97,14 @@ export function useIntersectionObserver(
     observer = undefined;
   };
 
+  const unobserve = (element: Element | undefined | null) => {
+    if (!element) return;
+
+    observer?.unobserve(element);
+    observedElements.delete(element);
+    callbacks.delete(element);
+  };
+
   const observe = (
     element: Element | undefined | null,
     callback: (isIntersecting: boolean) => void,
@@ -123,6 +131,7 @@ export function useIntersectionObserver(
 
   return {
     observe,
+    unobserve,
     disconnect: cleanup,
   };
 }

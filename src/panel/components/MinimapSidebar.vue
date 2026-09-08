@@ -32,7 +32,9 @@ const isOpen = computed(() =>
 const fields = ref<Record<string, KirbyAnyFieldProps>>({});
 const activeFieldNames = ref<string[]>([]);
 const activeBlockIds = ref<string[]>([]);
-const observedBlockIds = new Set<string>();
+// A deleted block is out of the DOM by the time it is unobserved, so the
+// element is kept rather than looked up.
+const observedBlockElements = new Map<string, Element>();
 
 const observer = useIntersectionObserver({
   rootMargin: "0px",
@@ -152,7 +154,7 @@ function cleanupObservers() {
 
   activeFieldNames.value = [];
   activeBlockIds.value = [];
-  observedBlockIds.clear();
+  observedBlockElements.clear();
 }
 
 function observeFields() {
@@ -191,7 +193,7 @@ function updateBlockObservers() {
 }
 
 function observeBlock(blockId: string) {
-  if (observedBlockIds.has(blockId)) return;
+  if (observedBlockElements.has(blockId)) return;
 
   const blockElement = document.querySelector(`[data-id="${blockId}"]`);
   if (!blockElement) return;
@@ -206,11 +208,11 @@ function observeBlock(blockId: string) {
     }
   });
 
-  observedBlockIds.add(blockId);
+  observedBlockElements.set(blockId, blockElement);
 }
 
 function unobserveDeletedBlocks(currentBlockIds: Set<string>) {
-  const deletedBlockIds = [...observedBlockIds].filter(
+  const deletedBlockIds = [...observedBlockElements.keys()].filter(
     (id) => !currentBlockIds.has(id),
   );
   if (!deletedBlockIds.length) return;
@@ -220,7 +222,8 @@ function unobserveDeletedBlocks(currentBlockIds: Set<string>) {
   );
 
   for (const id of deletedBlockIds) {
-    observedBlockIds.delete(id);
+    observer.unobserve(observedBlockElements.get(id));
+    observedBlockElements.delete(id);
   }
 }
 
