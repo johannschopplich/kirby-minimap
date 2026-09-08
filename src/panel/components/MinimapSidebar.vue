@@ -1,23 +1,28 @@
-<script setup>
+<script setup lang="ts">
+import type {
+  MinimapField,
+  MinimapModelField,
+  MinimapViewColumn,
+  MinimapViewTab,
+} from "../types";
 import { computed, nextTick, ref, useContent, usePanel, watch } from "kirbyuse";
 import { useBlocks } from "../composables/blocks";
 import {
   useEventListener,
   useIntersectionObserver,
-} from "../composables/listeners";
-
-const EXCLUDED_FIELD_TYPES = ["gap", "hidden", "line"];
-const OPEN_STATE_STORAGE_KEY = "kirby$minimap";
-// Kirby's own menu breakpoint. It has no custom property for it, and a media
-// query could not read one anyway.
-// See: https://github.com/getkirby/kirby/blob/main/panel/src/components/View/Menu.vue
-const DESKTOP_MEDIA_QUERY = "(min-width: 60rem)";
+} from "../composables/events";
+import {
+  DESKTOP_MEDIA_QUERY,
+  EXCLUDED_FIELD_TYPES,
+  OPEN_STATE_STORAGE_KEY,
+  PLUGIN_MODEL_FIELDS_API_ROUTE,
+} from "../constants";
 
 const panel = usePanel();
 const { currentContent, contentChanges } = useContent();
 const { getBlockIcon, extractBlockText, scrollToBlock } = useBlocks();
 
-const minimap = ref();
+const minimap = ref<HTMLElement>();
 
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
 const isDesktop = ref(desktopMedia.matches);
@@ -34,19 +39,19 @@ const isOpen = computed(() =>
   isDesktop.value ? isExpanded.value : isOverlayOpen.value,
 );
 
-const fields = ref({});
-const activeFieldNames = ref([]);
-const activeBlockIds = ref([]);
-const observedBlockIds = new Set();
+const fields = ref<Record<string, MinimapModelField>>({});
+const activeFieldNames = ref<string[]>([]);
+const activeBlockIds = ref<string[]>([]);
+const observedBlockIds = new Set<string>();
 
-const resolvedFields = computed(() =>
+const resolvedFields = computed<Record<string, MinimapField>>(() =>
   Object.fromEntries(
     Object.entries(fields.value).map(([key, field]) => {
       const content = contentChanges.value[key] ?? currentContent.value[key];
       const blocks =
         field.type === "blocks" && Array.isArray(content)
           ? content
-              .filter((block) => !EXCLUDED_FIELD_TYPES.includes(block.type))
+              .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
               .map((block) => ({
                 ...block,
                 _icon: getBlockIcon(block.type, field),
@@ -81,7 +86,7 @@ const observer = useIntersectionObserver({
 });
 
 watch(isExpanded, (newValue) => {
-  localStorage.setItem(OPEN_STATE_STORAGE_KEY, newValue);
+  localStorage.setItem(OPEN_STATE_STORAGE_KEY, String(newValue));
   updateMinimapWidth(newValue);
 });
 
@@ -144,7 +149,7 @@ async function initializeMinimapContent() {
 
   // Ensure all Panel components are loaded before querying DOM elements.
   if (panel.isLoading) {
-    await new Promise((resolve) => {
+    await new Promise<void>((resolve) => {
       const stop = watch(
         () => panel.isLoading,
         () => {
@@ -155,8 +160,8 @@ async function initializeMinimapContent() {
     });
   }
 
-  const modelFields = await panel.api.get(
-    "__minimap__/model-fields",
+  const modelFields = await panel.api.get<Record<string, MinimapModelField>>(
+    PLUGIN_MODEL_FIELDS_API_ROUTE,
     { id: panel.view.path },
     undefined,
     // Silent
@@ -178,7 +183,7 @@ async function initializeMinimapContent() {
 
   // Remove excluded field types from the model fields.
   for (const [key, field] of Object.entries(filteredFields)) {
-    if (EXCLUDED_FIELD_TYPES.includes(field.type)) {
+    if (EXCLUDED_FIELD_TYPES.has(field.type)) {
       delete filteredFields[key];
     }
   }
@@ -219,7 +224,7 @@ function cleanupObservers() {
 function updateBlockObservers() {
   if (!observer) return;
 
-  const currentBlockIds = new Set();
+  const currentBlockIds = new Set<string>();
 
   // Add observers for all blocks in all block fields.
   for (const field of Object.values(fields.value)) {
@@ -282,7 +287,7 @@ function updateMinimapWidth(isOpen = false) {
   );
 }
 
-function setCssProperty(property, value) {
+function setCssProperty(property: string, value: string) {
   document.documentElement.style.setProperty(property, value);
 }
 
@@ -290,17 +295,18 @@ function setCssProperty(property, value) {
 // the view props keep the blueprint's spelling. A camel-cased field name would
 // otherwise match nothing and drop out of the list.
 function extractCurrentTabFieldNames() {
-  const fieldNames = new Set();
+  const fieldNames = new Set<string>();
 
-  const columns = Array.isArray(panel.view.props.tab.columns)
-    ? panel.view.props.tab.columns
-    : Object.values(panel.view.props.tab.columns);
+  const tab = panel.view.props.tab as MinimapViewTab;
+  const columns: MinimapViewColumn[] = Array.isArray(tab.columns)
+    ? tab.columns
+    : Object.values(tab.columns);
 
   for (const column of columns) {
     for (const section of Object.values(column.sections)) {
       if (section.type !== "fields") continue;
 
-      for (const field of Object.values(section.fields)) {
+      for (const field of Object.values(section.fields ?? {})) {
         fieldNames.add(field.name.toLowerCase());
       }
     }
@@ -309,7 +315,7 @@ function extractCurrentTabFieldNames() {
   return fieldNames;
 }
 
-function jumpToField(fieldName) {
+function jumpToField(fieldName: string) {
   const fieldElement = document.querySelector(`.k-field-name-${fieldName}`);
   if (!fieldElement) return;
 
@@ -321,7 +327,7 @@ function jumpToField(fieldName) {
   isOverlayOpen.value = false;
 }
 
-function jumpToBlock(blockId) {
+function jumpToBlock(blockId: string) {
   scrollToBlock(blockId);
   isOverlayOpen.value = false;
 }

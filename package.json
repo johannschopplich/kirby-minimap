@@ -5,23 +5,29 @@
   "private": true,
   "packageManager": "pnpm@11.25.0",
   "scripts": {
-    "dev": "kirbyup serve src/panel/index.js",
-    "build": "kirbyup src/panel/index.js",
+    "dev": "kirbyup serve src/panel/index.ts",
+    "build": "kirbyup src/panel/index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier \"src/panel/**\" --write",
+    "test:types": "tsc --noEmit",
     "release": "pnpm run build && bumpp --all --execute \"npx zx scripts/pre-release.mjs\" && zx scripts/post-release.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
+    "@types/node": "^26.4.1",
     "@unocss/eslint-plugin": "^66.10.0",
     "bumpp": "^12.3.0",
     "eslint": "^10.10.0",
+    "jiti": "^2.7.0",
     "kirby-types": "^1.6.1",
     "kirbyup": "^3.5.0",
     "kirbyuse": "^1.3.1",
     "prettier": "^3.9.6",
+    "typescript": "^6.0.3",
     "unocss": "^66.10.0",
+    "vite": "~6.3.7",
+    "vue": "^2.7.16",
     "zx": "^8.8.5"
   }
 }

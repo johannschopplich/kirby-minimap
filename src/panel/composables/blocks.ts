@@ -1,45 +1,29 @@
+import type { KirbyBlockValue } from "kirby-types";
+import type { MinimapModelField } from "../types";
 import { usePanel } from "kirbyuse";
-
-const BLOCK_ICON_MAP = {
-  heading: "title",
-  text: "text",
-  image: "image",
-  gallery: "dashboard",
-  video: "video",
-  code: "code",
-  quote: "quote",
-  markdown: "markdown",
-  list: "list-bullet",
-  line: "divider",
-  table: "menu",
-};
-
-const BLOCK_ANIMATION_CLASS = "k-panel-minimap-highlight";
+import {
+  BLOCK_ANIMATION_CLASS,
+  BLOCK_ANIMATION_DURATION,
+  BLOCK_ICON_MAP,
+  BLOCK_TEXT_LIMIT,
+} from "../constants";
 
 export function useBlocks() {
   const panel = usePanel();
 
-  /**
-   * Returns the icon name for a block type, preferring the icon declared by
-   * the fieldset.
-   *
-   * @param {string} type - The block type
-   * @param {object} field - The field object containing fieldsets
-   * @returns {string} - The icon name to use
-   */
-  function getBlockIcon(type, field) {
-    return field.fieldsets[type]?.icon || (BLOCK_ICON_MAP[type] ?? "box");
+  /** Returns the icon for a block type, preferring the one its fieldset declares. */
+  function getBlockIcon(type: string, field: MinimapModelField): string {
+    return field.fieldsets?.[type]?.icon || (BLOCK_ICON_MAP[type] ?? "box");
   }
 
   /**
    * Returns the block's most meaningful text for display, falling back to the
    * block type's name.
-   *
-   * @param {object} block - The block object
-   * @param {object} field - The field object containing fieldsets
-   * @returns {string} - The text to display for the block
    */
-  function extractBlockText(block, field) {
+  function extractBlockText(
+    block: KirbyBlockValue,
+    field: MinimapModelField,
+  ): string {
     const { content, type } = block;
 
     switch (type) {
@@ -72,24 +56,18 @@ export function useBlocks() {
           : panel.t("field.blocks.markdown.name");
       case "list":
         return panel.t("field.blocks.list.name");
-      case "line":
-        return panel.t("field.blocks.line.name");
       case "table":
         return panel.t("field.blocks.table.name");
       default:
         return (
-          field.fieldsets[type]?.name ||
+          field.fieldsets?.[type]?.name ||
           type.charAt(0).toUpperCase() + type.slice(1)
         );
     }
   }
 
-  /**
-   * Scrolls a block into view and pulses a highlight on it.
-   *
-   * @param {string} blockId - The ID of the block to scroll to
-   */
-  function scrollToBlock(blockId) {
+  /** Scrolls a block into view and pulses a highlight on it. */
+  function scrollToBlock(blockId: string) {
     if (!blockId) return;
 
     const blockElement = document.querySelector(`[data-id="${blockId}"]`);
@@ -103,13 +81,7 @@ export function useBlocks() {
     blockElement.classList.add(BLOCK_ANIMATION_CLASS);
     setTimeout(() => {
       blockElement.classList.remove(BLOCK_ANIMATION_CLASS);
-    }, 2000);
-
-    // Close the mobile menu.
-    // See: https://github.com/getkirby/kirby/blob/938fe98951cace6c77aab744779bf4e0799ad705/panel/src/panel/menu.js#L25
-    if (window.matchMedia?.("(max-width: 60rem)").matches) {
-      panel.menu.close();
-    }
+    }, BLOCK_ANIMATION_DURATION);
   }
 
   return {
@@ -119,15 +91,9 @@ export function useBlocks() {
   };
 }
 
-/**
- * Strips HTML tags from a string and limits its length.
- *
- * @param {string} html - HTML string to strip
- * @param {number} limit - Character limit for the result
- * @returns {string} - Stripped text with length limit
- */
-function stripHtml(html, limit = 50) {
+/** Strips HTML tags from a string and cuts it to the sidebar's limit. */
+function stripHtml(html: string | undefined, limit = BLOCK_TEXT_LIMIT): string {
   if (!html) return "";
   const text = html.replace(/<[^>]*>/g, "");
-  return text.substring(0, limit);
+  return text.slice(0, limit);
 }
