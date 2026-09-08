@@ -2,7 +2,7 @@ Title: Luise Frey: Rooms of Silence
 
 ----
 
-Text: [{"content": {"level": "h2", "text": "Rooms After Everyone Has Left"}, "id": "5a2c1ca6-30ca-45b9-98c8-abc23e5062c4", "isHidden": false, "type": "heading"}, {"content": {"text": "<p>Luise Frey photographs rooms after everyone has left them: a school gym on the first morning of the holidays, a ferry terminal at four in the morning, the back office of a shop that closed last spring.</p>"}, "id": "77806509-a02e-41ca-b092-9cbb203c479f", "isHidden": false, "type": "text"}, {"content": {"text": "<p>I wait until the dust has settled inside the frame.</p>", "citation": "Luise Frey"}, "id": "2f7befe9-0309-413c-8007-a04f59d4e8ea", "isHidden": false, "type": "quote"}, {"content": {"text": "<ul><li>Twenty-eight prints, made over six winters</li><li>Northern Germany and the Faroe Islands</li><li>Large-format camera, available light</li></ul>"}, "id": "8133fb9d-fa14-4606-9c9c-08d37bf71937", "isHidden": false, "type": "list"}, {"content": {}, "id": "6f076ef9-6964-4e41-b625-c3edfbf48200", "isHidden": false, "type": "line"}, {"content": {"text": "Press images are available on request. A conversation with the artist takes place on 14 November at 7 pm, admission free."}, "id": "320bead6-e0f4-43ae-9a44-c36ede487065", "isHidden": false, "type": "markdown"}]
+Text: [{"content":{"level":"h2","text":"Rooms After Everyone Has Left"},"id":"5a2c1ca6-30ca-45b9-98c8-abc23e5062c4","isHidden":false,"type":"heading"},{"content":{"text":"<p>Luise Frey photographs rooms after everyone has left them: a school gym on the first morning of the holidays, a ferry terminal at four in the morning, the back office of a shop that closed last spring.</p>"},"id":"77806509-a02e-41ca-b092-9cbb203c479f","isHidden":false,"type":"text"},{"content":{"text":"I wait until the dust has settled inside the frame.","citation":"Luise Frey"},"id":"2f7befe9-0309-413c-8007-a04f59d4e8ea","isHidden":false,"type":"quote"},{"content":{"text":"<ul><li>Twenty-eight prints, made over six winters</li><li>Northern Germany and the Faroe Islands</li><li>Large-format camera, available light</li></ul>"},"id":"8133fb9d-fa14-4606-9c9c-08d37bf71937","isHidden":false,"type":"list"},{"content":[],"id":"6f076ef9-6964-4e41-b625-c3edfbf48200","isHidden":false,"type":"line"},{"content":{"text":"Press images are available on request. A conversation with the artist takes place on 14 November at 7 pm, admission free."},"id":"320bead6-e0f4-43ae-9a44-c36ede487065","isHidden":false,"type":"markdown"}]
 
 ----
 
@@ -26,7 +26,18 @@ Cataloguepages: 96
 
 ----
 
-Presscontacts: [{"name": "Anke Wehmeyer", "email": "presse@kunsthalle-leipzig.de"}, {"name": "Tobias Krenz", "email": "tobias.krenz@kunsthalle-leipzig.de"}]
+Presscontacts:
+
+- 
+  name: Anke Wehmeyer
+  email: presse@kunsthalle-leipzig.de
+  0: 'name": "Anke Wehmeyer'
+  1: 'email": "presse@kunsthalle-leipzig.de'
+- 
+  name: Tobias Krenz
+  email: tobias.krenz@kunsthalle-leipzig.de
+  0: 'name": "Tobias Krenz'
+  1: 'email": "tobias.krenz@kunsthalle-leipzig.de'
 
 ----
 
