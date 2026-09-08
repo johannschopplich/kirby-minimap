@@ -1,4 +1,4 @@
-[![Kirby Minimap screenshot](./.github/kirby-minimap.png)](https://kirby.tools/minimap)
+[![Kirby Minimap](https://kirby.tools/social-card/minimap.png)](https://kirby.tools/minimap)
 
 # Kirby Minimap
 
@@ -9,12 +9,6 @@ Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com). Install it, and
 - 🖱️ **Jump to a Field or Block**: Click an entry and the Panel scrolls it into the middle of the view, with a short pulse on blocks.
 - 🎬 **Blocks by Icon and First Words**: Blocks fields unfold into their blocks, each with the fieldset's icon and the first 50 characters of text.
 - 🫴 **See Where You Are**: Fields and blocks in view are marked in the sidebar as you scroll, and required fields carry a star. The sidebar collapses to a strip of dashes and remembers its state.
-
-## Demo
-
-For a quick demo of the minimap in action, check out the following screencast:
-
-https://github.com/user-attachments/assets/40e4e439-a79a-49b4-9c55-d6ab8fba8373
 
 ## Requirements
 
