@@ -1,6 +1,6 @@
 export const PLUGIN_MODEL_FIELDS_API_ROUTE = "__minimap__/model-fields";
 
-export const OPEN_STATE_STORAGE_KEY = "kirby$minimap";
+export const EXPANDED_STATE_STORAGE_KEY = "kirby$minimap$expanded";
 
 /**
  * Kirby's own menu breakpoint. It has no custom property for it, and a media

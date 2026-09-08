@@ -12,7 +12,7 @@ import {
   BLOCK_TEXT_LIMIT,
   DESKTOP_MEDIA_QUERY,
   EXCLUDED_FIELD_TYPES,
-  OPEN_STATE_STORAGE_KEY,
+  EXPANDED_STATE_STORAGE_KEY,
 } from "../constants";
 
 const panel = usePanel();
@@ -23,7 +23,7 @@ const { getModelFields } = useModelFields();
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
 const isDesktop = ref(desktopMedia.matches);
 
-const isExpanded = ref(localStorage.getItem(OPEN_STATE_STORAGE_KEY) === "true");
+const isExpanded = ref(localStorage.getItem(EXPANDED_STATE_STORAGE_KEY) === "true");
 const isOverlayOpen = ref(false);
 const isOpen = computed(() =>
   isDesktop.value ? isExpanded.value : isOverlayOpen.value,
@@ -78,7 +78,7 @@ useEventListener(desktopMedia, "change", (event) => {
 });
 
 watch(isExpanded, (newValue) => {
-  localStorage.setItem(OPEN_STATE_STORAGE_KEY, String(newValue));
+  localStorage.setItem(EXPANDED_STATE_STORAGE_KEY, String(newValue));
   updateMinimapWidth();
 });
 
