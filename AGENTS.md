@@ -4,10 +4,12 @@ Kirby CMS Panel plugin that renders a sidebar listing the fields and blocks of t
 
 ## Commands
 
-- `composer csfix` – php-cs-fixer, which lives in `tools/phpcs/vendor/bin/`, not `vendor/bin/`
-- `pnpm run test:types` – typecheck with `tsc`, which does not reach `.vue` files
-- `pnpm run lint` – ESLint
-- `pnpm run build` – build the Panel bundle (`index.js` / `index.css`)
+```bash
+composer csfix         # php-cs-fixer, lives in tools/phpcs/vendor/bin/, not vendor/bin/
+pnpm run test:types    # typecheck with tsc, which does not reach .vue files
+pnpm run lint          # ESLint
+pnpm run build         # build the Panel bundle (index.js / index.css)
+```
 
 There is no PHP test suite in this repo.
 
