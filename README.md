@@ -6,9 +6,9 @@ Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com). Install it, and
 
 ## Features
 
-- 🖱️ **Jump to a Field or Block**: Click an entry and the Panel scrolls it into the middle of the view, with a short pulse on blocks.
-- 🎬 **Blocks by Icon and First Words**: Blocks fields unfold into their blocks, each with the fieldset's icon and the first 50 characters of text.
-- 🫴 **See Where You Are**: Fields and blocks in view are marked in the sidebar as you scroll, and required fields carry a star. The sidebar collapses to a strip of dashes and remembers its state.
+- 🖱️ **Jump to a Field or Block**: Click an entry and the Panel scrolls to it.
+- 🎬 **Blocks by Icon and First Words**: Every block listed with its icon and the start of its text.
+- 🫴 **See Where You Are**: Fields and blocks in view are marked as you scroll, and required fields carry a star.
 
 ## Requirements
 
