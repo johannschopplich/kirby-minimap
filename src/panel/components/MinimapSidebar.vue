@@ -125,10 +125,6 @@ function measureHeaderOffset() {
 }
 
 async function initializeMinimapContent() {
-  if (panel.view.path !== "site" && !panel.view.path.startsWith("pages/")) {
-    return;
-  }
-
   if (panel.isLoading) {
     await new Promise<void>((resolve) => {
       const stop = watch(
@@ -450,7 +446,7 @@ function jumpToBlock(blockId: string) {
 @media (min-width: 60rem) {
   /* `--main-end` mirrors Kirby's `--main-start`, the space `.k-panel-main`
      keeps clear for the menu; Kirby declares no such token. */
-  .k-panel {
+  .k-panel:has(> .k-panel-minimap) {
     --main-end: var(--minimap-width);
   }
 

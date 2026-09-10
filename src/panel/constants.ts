@@ -10,6 +10,12 @@ export const EXPANDED_STATE_STORAGE_KEY = "kirby$minimap$expanded";
  */
 export const DESKTOP_MEDIA_QUERY = "(min-width: 60rem)";
 
+/** The views the sidebar mounts beside. */
+export const SUPPORTED_VIEW_COMPONENTS = new Set([
+  "k-site-view",
+  "k-page-view",
+]);
+
 /** Field and block types that carry nothing to jump to. */
 export const EXCLUDED_FIELD_TYPES = new Set(["gap", "hidden", "line"]);
 
