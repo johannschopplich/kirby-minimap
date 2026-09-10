@@ -2,12 +2,12 @@
 
 # Kirby Minimap
 
-Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com) that adds a sidebar to the site view and every page view, listing the fields and blocks of the current Panel tab. Click one and the Panel scrolls to it – no license activation, no setup.
+Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com) that adds a sidebar to the site view and every page view, listing the fields and blocks of the current Panel tab. Click one and the Panel scrolls to it. There is no license to activate and nothing to set up.
 
 ## Features
 
 - 🖱️ **Jump to a Field or Block**: Click an entry and the Panel scrolls to it.
-- 🎬 **Blocks by Icon and First Words**: Every block listed with its icon and the start of its text.
+- 🎬 **Blocks by Icon and First Words**: Every block listed with its icon and a short label.
 - 🫴 **See Where You Are**: Fields and blocks in view are marked as you scroll, and required fields carry a star.
 
 ## Requirements
