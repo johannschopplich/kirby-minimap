@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'debug' => true,
+    'debug' => env('KIRBY_DEBUG', false),
 
     'panel' => [
         'vue' => [
