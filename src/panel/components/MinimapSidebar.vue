@@ -288,7 +288,7 @@ function jumpToBlock(blockId: string) {
                 <span
                   v-if="field.required"
                   :title="panel.t('field.required')"
-                  class="km-[font-weight:var(--font-semi)] km-ms-[var(--spacing-1)] km-text-[var(--theme-color-600)]"
+                  class="km-[font-weight:var(--font-semi)] km-ms-[var(--spacing-1)] km-text-[color:var(--theme-color-600)]"
                   data-theme="negative"
                   v-text="'✶'"
                 />
