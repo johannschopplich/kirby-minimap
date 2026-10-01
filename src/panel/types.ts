@@ -10,7 +10,6 @@ export interface ResolvedBlock extends KirbyBlockValue {
   isActive: boolean;
 }
 
-/** `blocks` is empty for every field type but `blocks`. */
 export type ResolvedField = KirbyAnyFieldProps & {
   blocks: ResolvedBlock[];
   isActive: boolean;

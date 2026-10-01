@@ -17,7 +17,8 @@ import {
 
 const panel = usePanel();
 const { currentContent, contentChanges } = useContent();
-const { getBlockIcon, extractBlockText, scrollToBlock } = useBlocks();
+const { getFieldBlocks, getBlockIcon, extractBlockText, scrollToBlock } =
+  useBlocks();
 const { getModelFields } = useModelFields();
 
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -43,17 +44,14 @@ const resolvedFields = computed<Record<string, ResolvedField>>(() =>
   Object.fromEntries(
     Object.entries(fields.value).map(([name, field]) => {
       const content = contentChanges.value[name] ?? currentContent.value[name];
-      const blocks =
-        field.type === "blocks" && Array.isArray(content)
-          ? content
-              .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
-              .map((block) => ({
-                ...block,
-                icon: getBlockIcon(block.type, field),
-                text: extractBlockText(block, field).slice(0, BLOCK_TEXT_LIMIT),
-                isActive: activeBlockIds.value.includes(block.id),
-              }))
-          : [];
+      const blocks = getFieldBlocks(field, content)
+        .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
+        .map((block) => ({
+          ...block,
+          icon: getBlockIcon(block.type, field),
+          text: extractBlockText(block, field).slice(0, BLOCK_TEXT_LIMIT),
+          isActive: activeBlockIds.value.includes(block.id),
+        }));
 
       return [
         name,
@@ -172,12 +170,9 @@ function updateBlockObservers() {
   const currentBlockIds = new Set<string>();
 
   for (const [name, field] of Object.entries(fields.value)) {
-    if (field.type !== "blocks") continue;
-
     const content = contentChanges.value[name] ?? currentContent.value[name];
-    if (!Array.isArray(content)) continue;
 
-    for (const block of content) {
+    for (const block of getFieldBlocks(field, content)) {
       currentBlockIds.add(block.id);
       observeBlock(block.id);
     }
@@ -295,7 +290,7 @@ function jumpToBlock(blockId: string) {
               </template>
               <div v-else class="km-h-px km-flex-1 km-bg-[var(--color-text)]" />
             </div>
-            <template v-if="field.type === 'blocks' && field.blocks.length">
+            <template v-if="field.blocks.length">
               <div
                 v-for="(block, blockIndex) in field.blocks"
                 :key="`${blockIndex}-${block.id}`"
