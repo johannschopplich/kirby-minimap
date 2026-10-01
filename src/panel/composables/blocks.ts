@@ -1,9 +1,29 @@
-import type { KirbyAnyFieldProps, KirbyBlockValue } from "kirby-types";
+import type {
+  KirbyAnyFieldProps,
+  KirbyBlockValue,
+  KirbyLayoutValue,
+} from "kirby-types";
 import { usePanel } from "kirbyuse";
 import { BLOCK_ANIMATION_CLASS, BLOCK_ICON_MAP } from "../constants";
 
 export function useBlocks() {
   const panel = usePanel();
+
+  /** Collects the field's blocks in reading order, a layout's column by column. */
+  function getFieldBlocks(
+    field: KirbyAnyFieldProps,
+    content: unknown,
+  ): KirbyBlockValue[] {
+    if (!Array.isArray(content)) return [];
+    if (field.type === "blocks") return content;
+    if (field.type === "layout") {
+      return (content as KirbyLayoutValue[]).flatMap((row) =>
+        row.columns.flatMap((column) => column.blocks),
+      );
+    }
+
+    return [];
+  }
 
   function getBlockIcon(type: string, field: KirbyAnyFieldProps): string {
     const fieldsetIcon =
@@ -82,6 +102,7 @@ export function useBlocks() {
   }
 
   return {
+    getFieldBlocks,
     getBlockIcon,
     extractBlockText,
     scrollToBlock,
