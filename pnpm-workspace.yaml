@@ -1,5 +1,7 @@
 minimumReleaseAgeExcludePrune: true
 
+minimumReleaseAgeExclude:
+  - kirby-types@1.8.1
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - chokidar@4.0.3
