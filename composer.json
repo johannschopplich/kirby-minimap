@@ -1,12 +1,14 @@
 {
   "name": "johannschopplich/kirby-minimap",
-  "description": "Sidebar content navigation for the Kirby Panel",
+  "description": "Jump to any field or block from a sidebar",
   "type": "kirby-plugin",
   "version": "1.4.1",
   "keywords": [
-    "content",
     "kirby",
-    "minimap"
+    "kirby-cms",
+    "kirby-plugin",
+    "navigation",
+    "sidebar"
   ],
   "license": "MIT",
   "homepage": "https://kirby.tools/minimap",
