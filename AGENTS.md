@@ -15,8 +15,6 @@ There is no PHP test suite in this repo.
 
 ## Search Hints
 
-- `window.panel.plugin("johannschopplich/minimap"` – Panel registration
-- `App::plugin(` – PHP plugin registration
 - `k-panel-inside` – the component the sidebar mounts itself into
 - `__minimap__/model-fields` – API route returning the model's normalized fields
 - `FieldNormalizer` – resolves a custom field type to the standard type it extends
