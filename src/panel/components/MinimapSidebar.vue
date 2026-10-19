@@ -24,7 +24,9 @@ const { getModelFields } = useModelFields();
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
 const isDesktop = ref(desktopMedia.matches);
 
-const isExpanded = ref(localStorage.getItem(EXPANDED_STATE_STORAGE_KEY) === "true");
+const isExpanded = ref(
+  localStorage.getItem(EXPANDED_STATE_STORAGE_KEY) === "true",
+);
 const isOverlayOpen = ref(false);
 const isOpen = computed(() =>
   isDesktop.value ? isExpanded.value : isOverlayOpen.value,
