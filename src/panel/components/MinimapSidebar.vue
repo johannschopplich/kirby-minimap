@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import type { KirbyAnyFieldProps } from "kirby-types";
 import type { ResolvedField } from "../types";
-import { computed, nextTick, ref, useContent, usePanel, watch } from "kirbyuse";
+import {
+  computed,
+  nextTick,
+  ref,
+  useContent,
+  useHelpers,
+  usePanel,
+  watch,
+} from "kirbyuse";
 import { useBlocks } from "../composables/blocks";
 import {
   useEventListener,
@@ -16,6 +24,7 @@ import {
 } from "../constants";
 
 const panel = usePanel();
+const helpers = useHelpers();
 const { currentContent, contentChanges } = useContent();
 const { getFieldBlocks, getBlockIcon, extractBlockText, scrollToBlock } =
   useBlocks();
@@ -35,6 +44,7 @@ const isOpen = computed(() =>
 const fields = ref<Record<string, KirbyAnyFieldProps>>({});
 const activeFieldNames = ref<string[]>([]);
 const activeBlockIds = ref<string[]>([]);
+const stopObservingField = new Map<string, () => void>();
 const stopObservingBlock = new Map<string, () => void>();
 
 const observer = useIntersectionObserver({
@@ -42,9 +52,17 @@ const observer = useIntersectionObserver({
   threshold: 0,
 });
 
+// The same check Kirby's fieldset renders a field by, so a field its `when`
+// condition hides is left out here too.
+const visibleFields = computed(() =>
+  Object.entries(fields.value).filter(([, field]) =>
+    helpers.field.isVisible(field, currentContent.value),
+  ),
+);
+
 const resolvedFields = computed<Record<string, ResolvedField>>(() =>
   Object.fromEntries(
-    Object.entries(fields.value).map(([name, field]) => {
+    visibleFields.value.map(([name, field]) => {
       const content = contentChanges.value[name] ?? currentContent.value[name];
       const blocks = getFieldBlocks(field, content)
         .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
@@ -101,6 +119,17 @@ watch(
   { deep: true },
 );
 
+// Kirby renders a field it shows again as a new element, and only after this
+// flush, so its observer waits a tick.
+watch(
+  () => visibleFields.value.map(([name]) => name).join(),
+  async () => {
+    await nextTick();
+    updateFieldObservers();
+    updateBlockObservers();
+  },
+);
+
 watch(
   [() => panel.view.path, () => panel.view.props.tab],
   async () => {
@@ -139,7 +168,7 @@ async function initializeMinimapContent() {
 
   fields.value = await getModelFields();
 
-  observeFields();
+  updateFieldObservers();
   updateBlockObservers();
 }
 
@@ -148,30 +177,60 @@ function cleanupObservers() {
 
   activeFieldNames.value = [];
   activeBlockIds.value = [];
+  stopObservingField.clear();
   stopObservingBlock.clear();
 }
 
-function observeFields() {
-  for (const name of Object.keys(fields.value)) {
-    const fieldElement = document.querySelector(`.k-field-name-${name}`);
-    if (!fieldElement) continue;
+function updateFieldObservers() {
+  const visibleFieldNames = new Set<string>();
 
-    observer.observe(fieldElement, (isIntersecting) => {
-      if (isIntersecting) {
-        activeFieldNames.value.push(name);
-      } else {
-        activeFieldNames.value = activeFieldNames.value.filter(
-          (activeName) => activeName !== name,
-        );
-      }
-    });
+  for (const [name] of visibleFields.value) {
+    visibleFieldNames.add(name);
+    observeField(name);
+  }
+
+  unobserveHiddenFields(visibleFieldNames);
+}
+
+function observeField(name: string) {
+  if (stopObservingField.has(name)) return;
+
+  const fieldElement = document.querySelector(`.k-field-name-${name}`);
+  if (!fieldElement) return;
+
+  const stop = observer.observe(fieldElement, (isIntersecting) => {
+    if (isIntersecting) {
+      activeFieldNames.value.push(name);
+    } else {
+      activeFieldNames.value = activeFieldNames.value.filter(
+        (activeName) => activeName !== name,
+      );
+    }
+  });
+
+  stopObservingField.set(name, stop);
+}
+
+function unobserveHiddenFields(visibleFieldNames: Set<string>) {
+  const hiddenFieldNames = [...stopObservingField.keys()].filter(
+    (name) => !visibleFieldNames.has(name),
+  );
+  if (!hiddenFieldNames.length) return;
+
+  activeFieldNames.value = activeFieldNames.value.filter(
+    (activeName) => !hiddenFieldNames.includes(activeName),
+  );
+
+  for (const name of hiddenFieldNames) {
+    stopObservingField.get(name)?.();
+    stopObservingField.delete(name);
   }
 }
 
 function updateBlockObservers() {
   const currentBlockIds = new Set<string>();
 
-  for (const [name, field] of Object.entries(fields.value)) {
+  for (const [name, field] of visibleFields.value) {
     const content = contentChanges.value[name] ?? currentContent.value[name];
 
     for (const block of getFieldBlocks(field, content)) {
