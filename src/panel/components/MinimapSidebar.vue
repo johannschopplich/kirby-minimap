@@ -1,34 +1,26 @@
 <script setup lang="ts">
-import type { KirbyAnyFieldProps } from "kirby-types";
-import type { ResolvedField } from "../types";
-import {
-  computed,
-  nextTick,
-  ref,
-  useContent,
-  useHelpers,
-  usePanel,
-  watch,
-} from "kirbyuse";
+import { useContent, useHelpers, usePanel } from "kirbyuse";
+import { computed, nextTick, ref, watch } from "vue";
 import { useBlocks } from "../composables/blocks";
 import {
   useEventListener,
   useIntersectionObserver,
 } from "../composables/events";
-import { useModelFields } from "../composables/model-fields";
+import { useTabFields } from "../composables/tab-fields";
 import {
   BLOCK_TEXT_LIMIT,
   DESKTOP_MEDIA_QUERY,
   EXCLUDED_FIELD_TYPES,
   EXPANDED_STATE_STORAGE_KEY,
 } from "../constants";
+import MinimapSidebarView from "./MinimapSidebarView.vue";
 
 const panel = usePanel();
 const helpers = useHelpers();
-const { currentContent, contentChanges } = useContent();
+const { currentContent } = useContent();
 const { getFieldBlocks, getBlockIcon, extractBlockText, scrollToBlock } =
   useBlocks();
-const { getModelFields } = useModelFields();
+const fields = useTabFields();
 
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
 const isDesktop = ref(desktopMedia.matches);
@@ -41,7 +33,6 @@ const isOpen = computed(() =>
   isDesktop.value ? isExpanded.value : isOverlayOpen.value,
 );
 
-const fields = ref<Record<string, KirbyAnyFieldProps>>({});
 const activeFieldNames = ref<string[]>([]);
 const activeBlockIds = ref<string[]>([]);
 const stopObservingField = new Map<string, () => void>();
@@ -60,28 +51,31 @@ const visibleFields = computed(() =>
   ),
 );
 
-const resolvedFields = computed<Record<string, ResolvedField>>(() =>
-  Object.fromEntries(
-    visibleFields.value.map(([name, field]) => {
-      const content = contentChanges.value[name] ?? currentContent.value[name];
-      const blocks = getFieldBlocks(field, content)
-        .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
-        .map((block) => ({
-          ...block,
-          icon: getBlockIcon(block.type, field),
-          text: extractBlockText(block, field).slice(0, BLOCK_TEXT_LIMIT),
-          isActive: activeBlockIds.value.includes(block.id),
-        }));
+const resolvedFields = computed(() =>
+  visibleFields.value.map(([name, field]) => {
+    const content = currentContent.value[name];
+    const blocks = getFieldBlocks(field, content)
+      .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
+      .map((block) => ({
+        id: block.id,
+        icon: getBlockIcon(block.type, field),
+        text: extractBlockText(block, field).slice(0, BLOCK_TEXT_LIMIT),
+        isActive: activeBlockIds.value.includes(block.id),
+      }));
 
-      return [
-        name,
-        {
-          ...field,
-          blocks,
-          isActive: activeFieldNames.value.includes(name),
-        },
-      ];
-    }),
+    return {
+      name,
+      label: field.label ?? name,
+      required: field.required,
+      isActive: activeFieldNames.value.includes(name),
+      blocks,
+    };
+  }),
+);
+
+const listedBlockIds = computed(() =>
+  resolvedFields.value.flatMap((field) =>
+    field.blocks.map((block) => block.id),
   ),
 );
 
@@ -111,12 +105,15 @@ watch(
   },
 );
 
+// Reads the content only through the listed fields, never `currentContent`
+// directly: Kirby switches `panel.view` to the next view while the sidebar is
+// still mounted, and `panel.content.version()` throws for a view without
+// content versions.
 watch(
-  [currentContent, contentChanges],
+  () => listedBlockIds.value.join(),
   () => {
     updateBlockObservers();
   },
-  { deep: true },
 );
 
 // Kirby renders a field it shows again as a new element, and only after this
@@ -136,7 +133,7 @@ watch(
     isOverlayOpen.value = false;
     cleanupObservers();
 
-    await initializeMinimapContent();
+    await observeViewElements();
   },
   { immediate: true },
 );
@@ -153,7 +150,7 @@ function measureHeaderOffset() {
   setCssProperty("--minimap-top-offset", `${headerContentTop}px`);
 }
 
-async function initializeMinimapContent() {
+async function observeViewElements() {
   if (panel.isLoading) {
     await new Promise<void>((resolve) => {
       const stop = watch(
@@ -166,7 +163,8 @@ async function initializeMinimapContent() {
     });
   }
 
-  fields.value = await getModelFields();
+  // The tab's fields render only after this flush.
+  await nextTick();
 
   updateFieldObservers();
   updateBlockObservers();
@@ -228,18 +226,9 @@ function unobserveHiddenFields(visibleFieldNames: Set<string>) {
 }
 
 function updateBlockObservers() {
-  const currentBlockIds = new Set<string>();
+  for (const blockId of listedBlockIds.value) observeBlock(blockId);
 
-  for (const [name, field] of visibleFields.value) {
-    const content = contentChanges.value[name] ?? currentContent.value[name];
-
-    for (const block of getFieldBlocks(field, content)) {
-      currentBlockIds.add(block.id);
-      observeBlock(block.id);
-    }
-  }
-
-  unobserveDeletedBlocks(currentBlockIds);
+  unobserveDeletedBlocks(new Set(listedBlockIds.value));
 }
 
 function observeBlock(blockId: string) {
@@ -318,232 +307,15 @@ function jumpToBlock(blockId: string) {
 </script>
 
 <template>
-  <nav
-    class="k-panel-minimap"
-    :data-open="String(isOpen)"
-    @click.self="isOverlayOpen = false"
-  >
-    <div class="k-panel-minimap-body">
-      <menu>
-        <template v-for="field in Object.values(resolvedFields)">
-          <div :key="field.name">
-            <div
-              class="k-panel-minimap-menu-item"
-              :class="[
-                isOpen
-                  ? 'km-py-[var(--spacing-2)]'
-                  : 'km-py-[var(--spacing-3)]',
-              ]"
-              :data-active="String(field.isActive)"
-              @click="jumpToField(field.name)"
-            >
-              <template v-if="isOpen">
-                <span class="k-label-text km-[font-weight:var(--font-semi)]">
-                  {{ field.label }}
-                </span>
-                <span
-                  v-if="field.required"
-                  :title="panel.t('field.required')"
-                  class="km-[font-weight:var(--font-semi)] km-ms-[var(--spacing-1)] km-text-[color:var(--theme-color-600)]"
-                  data-theme="negative"
-                  v-text="'✶'"
-                />
-              </template>
-              <div v-else class="km-h-px km-flex-1 km-bg-[var(--color-text)]" />
-            </div>
-            <template v-if="field.blocks.length">
-              <div
-                v-for="(block, blockIndex) in field.blocks"
-                :key="`${blockIndex}-${block.id}`"
-                class="k-panel-minimap-menu-item km-flex km-items-center km-gap-[var(--spacing-2)] km-py-[var(--spacing-1)]"
-                :data-active="String(block.isActive)"
-                @click="jumpToBlock(block.id)"
-              >
-                <k-icon :type="block.icon" />
-                <span class="k-label-text">
-                  {{ block.text }}
-                </span>
-              </div>
-            </template>
-          </div>
-        </template>
-      </menu>
-    </div>
-
-    <k-button
-      :icon="isOpen ? 'angle-right' : 'angle-left'"
-      :title="isOpen ? panel.t('collapse') : panel.t('expand')"
-      size="xs"
-      class="k-panel-minimap-toggle"
-      @click="toggle"
-    />
-  </nav>
+  <MinimapSidebarView
+    :fields="resolvedFields"
+    :is-open="isOpen"
+    :collapse-label="panel.t('collapse')"
+    :expand-label="panel.t('expand')"
+    :required-label="panel.t('field.required')"
+    @toggle="toggle"
+    @close="isOverlayOpen = false"
+    @jump-field="jumpToField"
+    @jump-block="jumpToBlock"
+  />
 </template>
-
-<style>
-/* What follows mirrors Kirby's own collapsible menu, selector for selector,
-   with the sides swapped. The comments below mark where the minimap parts ways
-   with it.
-
-   @see https://github.com/getkirby/kirby/blob/main/panel/src/components/View/Menu.vue */
-
-/* Diverges: Kirby toggles the menu through `--menu-display`, the minimap
-   through its width, so that the collapsed strip of dashes stays visible.
-   `--menu-shadow` holds here because Kirby resets it to `none` on `.k-panel`
-   inside the same breakpoint. */
-.k-panel-minimap {
-  position: fixed;
-  inset-inline-end: 0;
-  inset-block: 0;
-  z-index: var(--z-navigation);
-  width: var(--minimap-width-overlay);
-  background-color: var(--panel-color-back);
-  box-shadow: var(--menu-shadow);
-}
-
-.k-panel-minimap[data-open="false"] {
-  width: 0;
-}
-
-.k-panel-minimap[data-open="false"] .k-panel-minimap-body {
-  display: none;
-}
-
-/* Diverges: Kirby puts the backdrop on `.k-panel::after` at `--z-drawer` and
-   makes it `pointer-events: none`. Ours is a child of the nav at `z-index: -1`,
-   so it covers the view, stays behind the panel itself, and still receives the
-   `@click.self` that closes the overlay. */
-.k-panel-minimap[data-open="true"]::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: var(--overlay-color-back);
-}
-
-.k-panel-minimap-body {
-  padding-block: var(--menu-padding);
-  overscroll-behavior: contain;
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: 100%;
-}
-
-.k-panel-minimap-toggle {
-  --button-align: flex-start;
-  --button-width: var(--menu-toggle-width);
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-end: 100%;
-  align-items: flex-start;
-  border-radius: 0;
-  overflow: visible;
-  transition: opacity 0.2s;
-}
-
-.k-panel-minimap-toggle:focus {
-  outline: 0;
-}
-
-.k-panel-minimap-toggle .k-button-icon {
-  display: grid;
-  place-items: center;
-  height: var(--menu-toggle-height);
-  width: var(--menu-toggle-width);
-  margin-top: var(--menu-padding);
-  border-block: 1px solid var(--menu-color-border);
-  border-inline-start: 1px solid var(--menu-color-border);
-  background: var(--panel-color-back);
-  border-start-start-radius: var(--button-rounded);
-  border-end-start-radius: var(--button-rounded);
-}
-
-/* Diverges: Kirby scopes this to the desktop query, where its own toggle is
-   the only one that exists. Ours is reachable on every width. */
-.k-panel-minimap-toggle:focus-visible .k-button-icon {
-  outline: var(--outline);
-  border-radius: var(--button-rounded);
-}
-
-/* Diverges: Kirby's menu rows are `.k-panel-menu-button`s, which carry a
-   background rather than an edge marker. `--menu-color-back` is Kirby's menu
-   surface, not a hover tint. */
-.k-panel-minimap-menu-item {
-  cursor: pointer;
-  border-inline-start-width: 2px;
-  border-inline-start-style: solid;
-  border-inline-start-color: transparent;
-  padding-inline: var(--menu-padding);
-}
-
-.k-panel-minimap-menu-item:hover {
-  background-color: var(--menu-color-back);
-}
-
-.k-panel-minimap-menu-item[data-active="true"] {
-  border-inline-start-color: var(--color-focus);
-}
-
-/* No counterpart in Kirby: the pulse a jumped-to block gets. */
-.k-panel-minimap-highlight {
-  animation: highlight-pulse 2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes highlight-pulse {
-  0%,
-  100% {
-    box-shadow: none;
-  }
-  50% {
-    box-shadow: inset 0 0 0 2px var(--color-focus);
-  }
-}
-
-@media (min-width: 60rem) {
-  /* `--main-end` mirrors Kirby's `--main-start`, the space `.k-panel-main`
-     keeps clear for the menu; Kirby declares no such token. */
-  .k-panel:has(> .k-panel-minimap) {
-    --main-end: var(--minimap-width);
-  }
-
-  .k-panel-main {
-    margin-inline-end: var(--main-end);
-  }
-
-  .k-panel-minimap {
-    width: var(--minimap-width);
-    border-left: 1px solid var(--menu-color-border);
-  }
-
-  .k-panel-minimap[data-open="false"] {
-    width: var(--minimap-width);
-  }
-
-  .k-panel-minimap[data-open="false"] .k-panel-minimap-body,
-  .k-panel-minimap-body {
-    display: block;
-    padding-top: calc(var(--minimap-top-offset) + var(--spacing-1));
-  }
-
-  .k-panel-minimap[data-open="true"]::before {
-    content: none;
-  }
-
-  /* Diverges: Kirby drives this from JS through a `data-hover` attribute,
-     noting that CSS `:hover` flickered; ours has not. */
-  .k-panel-minimap-toggle {
-    --button-height: 100%;
-    inset-block: 0;
-    opacity: 0;
-  }
-
-  .k-panel-minimap-toggle:focus-visible,
-  .k-panel-minimap:hover .k-panel-minimap-toggle {
-    opacity: 1;
-  }
-
-  .k-panel-minimap-menu-item {
-    border-inline-start-width: 1px;
-  }
-}
-</style>

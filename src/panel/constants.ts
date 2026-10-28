@@ -1,5 +1,3 @@
-export const PLUGIN_MODEL_FIELDS_API_ROUTE = "__minimap__/model-fields";
-
 export const EXPANDED_STATE_STORAGE_KEY = "kirby$minimap$expanded";
 
 /**
