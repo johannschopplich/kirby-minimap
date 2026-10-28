@@ -15,7 +15,7 @@ pnpm run build         # build the Panel bundle (index.js / index.css)
 ## Conventions
 
 - The plugin ships without `vendor/`, so it takes no runtime Composer dependency.
-- `src/panel/site.ts` is kirby.tools' entry: renaming or removing an export breaks the site.
+- `src/panel/site.ts` feeds kirby.tools' Panel mocks.
 
 ## Search Hints
 
