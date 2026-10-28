@@ -14,15 +14,14 @@ export function useBlocks() {
     field: KirbyAnyFieldProps,
     content: unknown,
   ): KirbyBlockValue[] {
-    if (!Array.isArray(content)) return [];
-    if (field.type === "blocks") return content;
-    if (field.type === "layout") {
+    if (!Array.isArray(content) || !("fieldsets" in field)) return [];
+    if ("layouts" in field) {
       return (content as KirbyLayoutValue[]).flatMap((row) =>
         row.columns.flatMap((column) => column.blocks),
       );
     }
 
-    return [];
+    return content;
   }
 
   function getBlockIcon(type: string, field: KirbyAnyFieldProps): string {
@@ -72,8 +71,6 @@ export function useBlocks() {
           : panel.t("field.blocks.markdown.name");
       case "list":
         return panel.t("field.blocks.list.name");
-      case "table":
-        return panel.t("field.blocks.table.name");
       default: {
         const fieldsetName =
           "fieldsets" in field ? field.fieldsets?.[type]?.name : undefined;

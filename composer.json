@@ -20,13 +20,15 @@
     }
   ],
   "require": {
-    "php": ">=8.2",
-    "getkirby/composer-installer": "^1",
-    "johannschopplich/kirby-tools-utils": "^0.1"
+    "php": ">=8.3",
+    "getkirby/composer-installer": "^1"
   },
   "require-dev": {
-    "getkirby/cms": "^5",
+    "getkirby/cms": "^6.0@beta",
     "vlucas/phpdotenv": "^5"
+  },
+  "conflict": {
+    "getkirby/cms": "<6"
   },
   "scripts": {
     "dev": [
@@ -45,7 +47,7 @@
   "extra": {
     "kirby-cms-path": false,
     "kirby": {
-      "compatible": "^4.0 || ^5.0"
+      "compatible": "^6.0"
     }
   }
 }

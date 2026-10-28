@@ -1,33 +1,24 @@
-import type {
-  KirbyAnyFieldProps,
-  KirbyBlockValue,
-  KirbyFieldProps,
-} from "kirby-types";
+import type { KirbyAnyFieldProps } from "kirby-types";
 
-export interface ResolvedBlock extends KirbyBlockValue {
+export interface MinimapBlock {
+  id?: string;
   icon: string;
   text: string;
-  isActive: boolean;
+  isActive?: boolean;
 }
 
-export type ResolvedField = KirbyAnyFieldProps & {
-  blocks: ResolvedBlock[];
-  isActive: boolean;
-};
+export interface MinimapField {
+  name?: string;
+  label: string;
+  required?: boolean;
+  isActive?: boolean;
+  blocks?: MinimapBlock[];
+}
 
 /**
- * The slice of a view's tab props the sidebar reads. Kirby types
- * `panel.view.props` as a bag of `any`, so the shape lives here.
+ * The slice of a view tab's column the sidebar reads. kirby-types leaves a
+ * column's props untyped, so the shape lives here.
  */
-export interface PanelViewTab {
-  columns: PanelViewColumn[] | Record<string, PanelViewColumn>;
-}
-
 export interface PanelViewColumn {
-  sections: Record<string, PanelViewSection>;
-}
-
-export interface PanelViewSection {
-  type: string;
-  fields?: Record<string, KirbyFieldProps>;
+  fields: Record<string, KirbyAnyFieldProps>;
 }

@@ -12,7 +12,7 @@ Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com) that adds a side
 
 ## Requirements
 
-- Kirby 4 or Kirby 5
+- Kirby 6
 
 ## Installation
 

@@ -1,5 +1,3 @@
-export const PLUGIN_MODEL_FIELDS_API_ROUTE = "__minimap__/model-fields";
-
 export const EXPANDED_STATE_STORAGE_KEY = "kirby$minimap$expanded";
 
 /**
@@ -16,8 +14,17 @@ export const SUPPORTED_VIEW_COMPONENTS = new Set([
   "k-page-view",
 ]);
 
-/** Field and block types that carry nothing to jump to. */
-export const EXCLUDED_FIELD_TYPES = new Set(["gap", "hidden", "line"]);
+/**
+ * Field and block types that carry nothing to jump to. Kirby renders `headline`
+ * and `info` fields without the `k-field-name-*` class the sidebar jumps by.
+ */
+export const EXCLUDED_FIELD_TYPES = new Set([
+  "gap",
+  "headline",
+  "hidden",
+  "info",
+  "line",
+]);
 
 /** Icons for the default block types, which ship no fieldset icon. */
 export const BLOCK_ICON_MAP: Record<string, string> = {

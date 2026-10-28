@@ -1,36 +1,36 @@
-import type { ComponentPublicInstance, PluginFunction } from "vue";
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-ignore The project declares no `*.vue` module, so the import has no type.
+import type { App, ComponentPublicInstance } from "vue";
+import { usePanel } from "kirbyuse";
+import { h, render } from "vue";
 import MinimapSidebar from "./components/MinimapSidebar.vue";
 import { SUPPORTED_VIEW_COMPONENTS } from "./constants";
 
 /**
- * Mounts the sidebar into the Panel's `k-panel-inside` wrapper by hand, since
- * Kirby offers no slot beside the view.
+ * Mounts the sidebar into the Panel's `k-panel-inside` element by hand, since
+ * Kirby offers no slot beside the view. Overriding `k-panel-inside` instead
+ * would copy a template that changes with Kirby, and a second plugin
+ * overriding it would replace ours.
  */
-export const minimapSidebarMixin: PluginFunction<any> = (Vue) => {
-  let sidebarComponent: ComponentPublicInstance | undefined;
-
-  Vue.mixin({
+export function minimapSidebarPlugin(app: App) {
+  app.mixin({
     mounted(this: ComponentPublicInstance) {
-      if (this.$options.name !== "k-panel-inside") return;
-      if (!SUPPORTED_VIEW_COMPONENTS.has(window.panel.view.component ?? "")) {
-        return;
-      }
+      if (!isPanelInside(this)) return;
 
-      const SidebarConstructor = Vue.extend(MinimapSidebar);
-      sidebarComponent = new SidebarConstructor({ parent: this as any });
-      sidebarComponent.$mount();
+      const panel = usePanel();
+      if (!SUPPORTED_VIEW_COMPONENTS.has(panel.view.component ?? "")) return;
 
-      this.$el.appendChild(sidebarComponent.$el);
+      const vnode = h(MinimapSidebar);
+      // Lets the sidebar resolve the components Kirby registers globally.
+      vnode.appContext = this.$.appContext;
+      render(vnode, this.$el);
     },
-    beforeDestroy(this: ComponentPublicInstance) {
-      if (this.$options.name !== "k-panel-inside") return;
-
-      if (sidebarComponent) {
-        sidebarComponent.$destroy();
-        sidebarComponent = undefined;
-      }
+    unmounted(this: ComponentPublicInstance) {
+      if (isPanelInside(this)) render(null, this.$el);
     },
   });
-};
+}
+
+// The view and `k-panel` share the element of `k-panel-inside`, so only the
+// component itself tells the three apart.
+function isPanelInside(instance: ComponentPublicInstance) {
+  return instance.$.type === instance.$.appContext.components["k-panel-inside"];
+}
