@@ -1,3 +1,3 @@
 <?php
 
-go(\Kirby\Panel\Panel::url('site'));
+go($kirby->panel()->url('site'));

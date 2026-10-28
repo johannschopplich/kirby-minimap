@@ -1,17 +1,13 @@
 title: Kunsthalle Leipzig
 
-sections:
-  details:
-    type: fields
-    fields:
-      museumName:
-        label: Museum Name
-        type: text
-      openingHours:
-        label: Opening Hours
-        type: text
-
+fields:
+  museumName:
+    label: Museum Name
+    type: text
+  openingHours:
+    label: Opening Hours
+    type: text
   pages:
-    type: pages
+    type: pagelist
     templates:
       - default
