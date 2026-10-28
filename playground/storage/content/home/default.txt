@@ -28,16 +28,12 @@ Cataloguepages: 96
 
 Presscontacts:
 
-- 
-  name: Anke Wehmeyer
+-
+  name: 'Anke Wehmeyer'
   email: presse@kunsthalle-leipzig.de
-  0: 'name": "Anke Wehmeyer'
-  1: 'email": "presse@kunsthalle-leipzig.de'
-- 
-  name: Tobias Krenz
+-
+  name: 'Tobias Krenz'
   email: tobias.krenz@kunsthalle-leipzig.de
-  0: 'name": "Tobias Krenz'
-  1: 'email": "tobias.krenz@kunsthalle-leipzig.de'
 
 ----
 
