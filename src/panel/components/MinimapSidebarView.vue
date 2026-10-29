@@ -76,8 +76,7 @@ const emit = defineEmits<{
 
 <style>
 /* What follows mirrors Kirby's own collapsible menu, selector for selector,
-   with the sides swapped. The comments below mark where the minimap parts ways
-   with it.
+   with the sides swapped.
 
    @see https://github.com/getkirby/kirby/blob/main/panel/src/components/View/Menu.vue */
 
