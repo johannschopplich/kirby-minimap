@@ -1,7 +1,7 @@
 import type { App, ComponentPublicInstance } from "vue";
 import { usePanel } from "kirbyuse";
 import { h, render } from "vue";
-import MinimapSidebar from "./components/MinimapSidebar.vue";
+import Sidebar from "./components/Sidebar.vue";
 import { SUPPORTED_VIEW_COMPONENTS } from "./constants";
 
 /**
@@ -10,7 +10,7 @@ import { SUPPORTED_VIEW_COMPONENTS } from "./constants";
  * would copy a template that changes with Kirby, and a second plugin
  * overriding it would replace ours.
  */
-export function minimapSidebarPlugin(app: App) {
+export function sidebarPlugin(app: App) {
   app.mixin({
     mounted(this: ComponentPublicInstance) {
       if (!isPanelInside(this)) return;
@@ -18,7 +18,7 @@ export function minimapSidebarPlugin(app: App) {
       const panel = usePanel();
       if (!SUPPORTED_VIEW_COMPONENTS.has(panel.view.component ?? "")) return;
 
-      const vnode = h(MinimapSidebar);
+      const vnode = h(Sidebar);
       // Lets the sidebar resolve the components Kirby registers globally.
       vnode.appContext = this.$.appContext;
       render(vnode, this.$el);

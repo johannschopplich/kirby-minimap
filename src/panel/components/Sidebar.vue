@@ -13,7 +13,7 @@ import {
   EXCLUDED_FIELD_TYPES,
   EXPANDED_STATE_STORAGE_KEY,
 } from "../constants";
-import MinimapSidebarView from "./MinimapSidebarView.vue";
+import SidebarBody from "./Ui/SidebarBody.vue";
 
 const panel = usePanel();
 const helpers = useHelpers();
@@ -307,7 +307,7 @@ function jumpToBlock(blockId: string) {
 </script>
 
 <template>
-  <MinimapSidebarView
+  <SidebarBody
     :fields="resolvedFields"
     :is-open="isOpen"
     :collapse-label="panel.t('collapse')"

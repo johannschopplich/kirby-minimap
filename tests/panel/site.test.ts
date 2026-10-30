@@ -13,9 +13,9 @@ describe("site barrel", () => {
   it("loads without `window`", async () => {
     expect(globalThis.window).toBeUndefined();
 
-    const { MinimapSidebarView } = await import("../../src/panel/site");
+    const { SidebarBody } = await import("../../src/panel/site");
 
-    expect(MinimapSidebarView).toBeTypeOf("object");
+    expect(SidebarBody).toBeTypeOf("object");
   });
 
   it("imports only the packages in PACKAGE_IMPORTS", async () => {
