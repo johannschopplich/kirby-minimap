@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MinimapField } from "../types";
+import type { MinimapField } from "../../types";
 
 defineProps<{
   fields: MinimapField[];
