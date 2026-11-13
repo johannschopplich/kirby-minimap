@@ -1,7 +1,7 @@
 import type {
   KirbyAnyFieldProps,
-  KirbyBlockValue,
-  KirbyLayoutValue,
+  KirbyBlock,
+  KirbyLayout,
 } from "kirby-types";
 import { useHelpers, usePanel } from "kirbyuse";
 import { BLOCK_ANIMATION_CLASS, BLOCK_ICON_MAP } from "../constants";
@@ -13,10 +13,10 @@ export function useBlocks() {
   function getFieldBlocks(
     field: KirbyAnyFieldProps,
     content: unknown,
-  ): KirbyBlockValue[] {
+  ): KirbyBlock[] {
     if (!Array.isArray(content) || !("fieldsets" in field)) return [];
     if ("layouts" in field) {
-      return (content as KirbyLayoutValue[]).flatMap((row) =>
+      return (content as KirbyLayout[]).flatMap((row) =>
         row.columns.flatMap((column) => column.blocks),
       );
     }
@@ -36,7 +36,7 @@ export function useBlocks() {
    * block type's name.
    */
   function extractBlockText(
-    block: KirbyBlockValue,
+    block: KirbyBlock,
     field: KirbyAnyFieldProps,
   ): string {
     const { content, type } = block;

@@ -1,8 +1,8 @@
-import type { KirbyAnyFieldProps, KirbyBlockValue } from "kirby-types";
+import type { KirbyAnyFieldProps, KirbyBlock } from "kirby-types";
 import { describe, expect, it } from "vitest";
 import { useBlocks } from "../../src/panel/composables/blocks";
 
-const HEADING: KirbyBlockValue = {
+const HEADING: KirbyBlock = {
   content: { text: "Heading" },
   id: "heading",
   isHidden: false,
