@@ -4,6 +4,15 @@
 
 Kirby Minimap is a plugin for [Kirby CMS](https://getkirby.com) that adds a sidebar to the site view and every page view, listing the fields and blocks of the current Panel tab. Click one and the Panel scrolls to it. There is no license to activate and nothing to set up.
 
+## When to Use
+
+| I want to…                                           | Use                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------- |
+| Find a field or a block in a long site or page form  | Its entry in the minimap                                            |
+| Split a long form into groups of fields              | Kirby's blueprint tabs – the minimap lists the current tab's fields |
+| Navigate a file or user view                         | Not covered – the minimap sits beside the site view and page views  |
+| Reach a field inside a `structure` or `object` field | Not covered – the outer field is a single entry                     |
+
 ## Features
 
 - 🖱️ **Jump to a Field or Block**: Click an entry and the Panel scrolls to it.
@@ -24,11 +33,11 @@ composer require johannschopplich/kirby-minimap
 
 ### Manual Installation
 
-Download and copy this repository to `/site/plugins/kirby-minimap`.
+Download a [release](https://github.com/johannschopplich/kirby-minimap/releases) and extract it to `/site/plugins/kirby-minimap`.
 
 ## Documentation
 
-For installation, configuration, and usage, see the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
+For installation and usage, see the [Kirby Minimap documentation](https://kirby.tools/docs/minimap).
 
 ## License
 
