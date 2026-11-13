@@ -66,7 +66,8 @@ const resolvedFields = computed(() =>
     return {
       name,
       label: field.label ?? name,
-      required: field.required,
+      // Kirby's `pagelist` and `filelist` have no `required` prop and star by `min`.
+      required: field.required ?? ("min" in field && Boolean(field.min)),
       isActive: activeFieldNames.value.includes(name),
       blocks,
     };
