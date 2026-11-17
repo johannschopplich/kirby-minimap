@@ -1,9 +1,10 @@
 <?php
 
 use Kirby\Cms\App;
+use Kirby\Exception\LogicException;
 
-@include_once __DIR__ . '/vendor/autoload.php';
+if (version_compare(App::version() ?? '0', '6.0.0-beta', '<')) {
+    throw new LogicException('Kirby Minimap requires Kirby 6');
+}
 
-App::plugin('johannschopplich/minimap', [
-    'api' => require __DIR__ . '/src/extensions/api.php'
-]);
+App::plugin('johannschopplich/minimap', []);

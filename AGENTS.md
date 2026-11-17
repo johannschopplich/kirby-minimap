@@ -5,17 +5,14 @@ Kirby CMS Panel plugin that renders a sidebar listing the fields and blocks of t
 ## Commands
 
 ```bash
-composer csfix         # php-cs-fixer, lives in tools/phpcs/vendor/bin/, not vendor/bin/
-pnpm run test:types    # typecheck with tsc, which does not reach .vue files
-pnpm run lint          # ESLint
-pnpm run build         # build the Panel bundle (index.js / index.css)
+composer csfix         # lives in tools/phpcs/vendor/bin/, not vendor/bin/
+pnpm run test --run
+pnpm run test:types
+pnpm run lint
+pnpm run build         # after a change in src/panel/; index.js and index.css are committed
 ```
 
-There is no PHP test suite in this repo.
+## Conventions
 
-## Search Hints
-
-- `k-panel-inside` – the component the sidebar mounts itself into
-- `__minimap__/model-fields` – API route returning the model's normalized fields
-- `FieldNormalizer` – resolves a custom field type to the standard type it extends
-- `.k-panel-minimap` – the sidebar's own class prefix, in markup and stylesheet
+- The plugin ships without `vendor/`, so it takes no runtime Composer dependency.
+- `src/panel/site.ts` feeds kirby.tools' Panel mocks.

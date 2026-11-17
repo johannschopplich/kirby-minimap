@@ -6,59 +6,46 @@ tabs:
     icon: text
     columns:
       - width: 2/3
-        sections:
-          body:
-            type: fields
-            fields:
-              text:
-                label: Text
-                type: blocks
-                required: true
+        fields:
+          text:
+            label: Text
+            type: blocks
+            required: true
 
       - width: 1/3
-        sections:
-          summary:
-            type: fields
-            fields:
-              description:
-                label: Description
-                type: textarea
-                buttons: false
-                size: small
-                required: true
-              dates:
-                label: Dates
-                type: text
+        fields:
+          description:
+            label: Description
+            type: textarea
+            buttons: false
+            size: small
+            required: true
+          dates:
+            label: Dates
+            type: text
 
   meta:
     label: Meta
     icon: cog
     columns:
       - width: 1/1
-        sections:
-          listing:
-            type: fields
+        fields:
+          keywords:
+            label: Keywords
+            type: tags
+          admission:
+            label: Free Admission
+            type: toggle
+          cataloguePages:
+            label: Catalogue Pages
+            type: number
+          pressContacts:
+            label: Press Contacts
+            type: structure
             fields:
-              keywords:
-                label: Keywords
-                type: tags
-              admission:
-                label: Free Admission
-                type: toggle
-              cataloguePages:
-                label: Catalogue Pages
-                type: number
-
-          press:
-            type: fields
-            fields:
-              pressContacts:
-                label: Press Contacts
-                type: structure
-                fields:
-                  name:
-                    label: Name
-                    type: text
-                  email:
-                    label: Email
-                    type: email
+              name:
+                label: Name
+                type: text
+              email:
+                label: Email
+                type: email

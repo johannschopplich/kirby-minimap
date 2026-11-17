@@ -1,12 +1,6 @@
-import type {
-  ComponentPublicInstance,
-  Ref,
-  ShallowRef,
-  WritableComputedRef,
-} from "vue";
-import { getCurrentScope, onScopeDispose, unref, watch } from "kirbyuse";
+import type { ComponentPublicInstance, MaybeRef } from "vue";
+import { getCurrentScope, onScopeDispose, unref, watch } from "vue";
 
-type MaybeRef<T> = T | Ref<T> | ShallowRef<T> | WritableComputedRef<T>; // TODO: Remove in Vue 3.
 type MaybeElement = HTMLElement | ComponentPublicInstance | undefined | null;
 
 /**

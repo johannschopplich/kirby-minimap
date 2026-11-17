@@ -1,9 +1,9 @@
 import type {
   KirbyAnyFieldProps,
-  KirbyBlockValue,
-  KirbyLayoutValue,
+  KirbyBlock,
+  KirbyLayout,
 } from "kirby-types";
-import { usePanel } from "kirbyuse";
+import { useHelpers, usePanel } from "kirbyuse";
 import { BLOCK_ANIMATION_CLASS, BLOCK_ICON_MAP } from "../constants";
 
 export function useBlocks() {
@@ -13,16 +13,15 @@ export function useBlocks() {
   function getFieldBlocks(
     field: KirbyAnyFieldProps,
     content: unknown,
-  ): KirbyBlockValue[] {
-    if (!Array.isArray(content)) return [];
-    if (field.type === "blocks") return content;
-    if (field.type === "layout") {
-      return (content as KirbyLayoutValue[]).flatMap((row) =>
+  ): KirbyBlock[] {
+    if (!Array.isArray(content) || !("fieldsets" in field)) return [];
+    if ("layouts" in field) {
+      return (content as KirbyLayout[]).flatMap((row) =>
         row.columns.flatMap((column) => column.blocks),
       );
     }
 
-    return [];
+    return content;
   }
 
   function getBlockIcon(type: string, field: KirbyAnyFieldProps): string {
@@ -37,16 +36,16 @@ export function useBlocks() {
    * block type's name.
    */
   function extractBlockText(
-    block: KirbyBlockValue,
+    block: KirbyBlock,
     field: KirbyAnyFieldProps,
   ): string {
     const { content, type } = block;
 
     switch (type) {
       case "heading":
-        return stripHtml(content.text);
+        return htmlToText(content.text);
       case "text":
-        return stripHtml(content.text);
+        return htmlToText(content.text);
       case "image":
         return content.alt || panel.t("field.blocks.image.name");
       case "gallery":
@@ -54,7 +53,9 @@ export function useBlocks() {
           ? `${panel.t("field.blocks.gallery.name")} (${content.images.length})`
           : panel.t("field.blocks.gallery.name");
       case "video":
-        return stripHtml(content.caption) || panel.t("field.blocks.video.name");
+        return (
+          htmlToText(content.caption) || panel.t("field.blocks.video.name")
+        );
       case "code":
         return (
           panel.t("field.blocks.code.name") +
@@ -62,18 +63,16 @@ export function useBlocks() {
         );
       case "quote":
         return (
-          stripHtml(content.text) ||
-          stripHtml(content.citation) ||
+          htmlToText(content.text) ||
+          htmlToText(content.citation) ||
           panel.t("field.blocks.quote.name")
         );
       case "markdown":
         return content.text
-          ? stripHtml(content.text)
+          ? htmlToText(content.text)
           : panel.t("field.blocks.markdown.name");
       case "list":
         return panel.t("field.blocks.list.name");
-      case "table":
-        return panel.t("field.blocks.table.name");
       default: {
         const fieldsetName =
           "fieldsets" in field ? field.fieldsets?.[type]?.name : undefined;
@@ -109,8 +108,9 @@ export function useBlocks() {
   };
 }
 
-function stripHtml(html: string | undefined): string {
+function htmlToText(html: string | undefined): string {
   if (!html) return "";
 
-  return html.replace(/<[^>]*>/g, "");
+  const { string } = useHelpers();
+  return string.unescapeHTML(string.stripHTML(html));
 }
