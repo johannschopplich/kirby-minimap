@@ -1,6 +1,10 @@
 import type { KirbyAnyFieldProps, KirbyBlock } from "kirby-types";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { useBlocks } from "../../src/panel/composables/blocks";
+
+vi.mock("kirbyuse", () => ({
+  usePanel: vi.fn(),
+}));
 
 const HEADING: KirbyBlock = {
   content: { text: "Heading" },
