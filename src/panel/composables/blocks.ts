@@ -1,8 +1,4 @@
-import type {
-  KirbyAnyFieldProps,
-  KirbyBlock,
-  KirbyLayout,
-} from "kirby-types";
+import type { KirbyAnyFieldProps, KirbyBlock, KirbyLayout } from "kirby-types";
 import { useHelpers, usePanel } from "kirbyuse";
 import { BLOCK_ANIMATION_CLASS, BLOCK_ICON_MAP } from "../constants";
 
