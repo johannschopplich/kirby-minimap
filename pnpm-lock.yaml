@@ -194,8 +194,8 @@ importers:
         specifier: ^4.0.0-beta.2
         version: 4.0.0-beta.2(@types/node@26.6.5)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(typescript@6.0.3)(yaml@2.9.1)
       kirbyuse:
-        specifier: ^2.0.0-beta.4
-        version: 2.0.0-beta.4(vue@3.5.44(typescript@6.0.3))
+        specifier: ^2.0.0-beta.6
+        version: 2.0.0-beta.6(vue@3.5.44(typescript@6.0.3))
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
@@ -2057,8 +2057,8 @@ packages:
     engines: {node: '>=24'}
     hasBin: true
 
-  kirbyuse@2.0.0-beta.4:
-    resolution: {integrity: sha512-NUshdJvZ6H+norwd8OPiJxu+4hsmpOq/eERdl7HSiy+zwVoK+5lmkWZv4OO5oVanSRIbeFt03ibIUDPo/nF9fQ==}
+  kirbyuse@2.0.0-beta.6:
+    resolution: {integrity: sha512-DUAfvIVIl6RvleUwGS6kvQmss57iq19GBxyaVv3kvG+WhmyqtMDjkQaJE7vw6uE0vDPPRMGJMbR0k3RcdAbW3A==}
     peerDependencies:
       dayjs: ^1.0.0
       prosemirror-commands: ^1.7.1
@@ -4716,7 +4716,7 @@ snapshots:
       - typescript
       - yaml
 
-  kirbyuse@2.0.0-beta.4(vue@3.5.44(typescript@6.0.3)):
+  kirbyuse@2.0.0-beta.6(vue@3.5.44(typescript@6.0.3)):
     dependencies:
       kirby-types: 2.0.0-beta.7(vue@3.5.44(typescript@6.0.3))
       vue: 3.5.44(typescript@6.0.3)
