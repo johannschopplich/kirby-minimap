@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'johannschopplich/kirby-minimap',
-        'pretty_version' => '2.0.0',
-        'version' => '2.0.0.0',
+        'pretty_version' => '2.0.1',
+        'version' => '2.0.1.0',
         'reference' => null,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -92,8 +92,8 @@
             'dev_requirement' => true,
         ),
         'johannschopplich/kirby-minimap' => array(
-            'pretty_version' => '2.0.0',
-            'version' => '2.0.0.0',
+            'pretty_version' => '2.0.1',
+            'version' => '2.0.1.0',
             'reference' => null,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
@@ -224,9 +224,9 @@
             'dev_requirement' => true,
         ),
         'symfony/yaml' => array(
-            'pretty_version' => 'v7.4.23',
-            'version' => '7.4.23.0',
-            'reference' => '1e601207ffe627a2e621faa9d661f1d32dcf1cec',
+            'pretty_version' => 'v7.4.25',
+            'version' => '7.4.25.0',
+            'reference' => '539dd469c25466d7225d6cadac1795201c9cf454',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/yaml',
             'aliases' => array(),
