@@ -39,3 +39,28 @@ describe("getFieldBlocks", () => {
     expect(getFieldBlocks(field, [{ text: "a" }])).toEqual([]);
   });
 });
+
+describe("getFieldBlockElementKeys", () => {
+  const { getFieldBlockElementKeys } = useBlocks();
+
+  it("keys a block anew once it moves to the next column in reading order", () => {
+    const field = {
+      type: "layout",
+      fieldsets: {},
+      layouts: [["1/2", "1/2"]],
+    } as KirbyAnyFieldProps;
+    const rows = (left: KirbyBlock[], right: KirbyBlock[]) => [
+      {
+        id: "row",
+        columns: [
+          { id: "left", blocks: left },
+          { id: "right", blocks: right },
+        ],
+      },
+    ];
+
+    expect(getFieldBlockElementKeys(field, rows([HEADING], []))).not.toEqual(
+      getFieldBlockElementKeys(field, rows([], [HEADING])),
+    );
+  });
+});

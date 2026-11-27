@@ -20,6 +20,27 @@ export function useBlocks() {
     return content;
   }
 
+  /**
+   * Keys the field's blocks by the element Kirby renders each one as. A block
+   * keeps its id but is rendered anew once it moves to another layout column
+   * or its row takes another layout.
+   */
+  function getFieldBlockElementKeys(
+    field: KirbyAnyFieldProps,
+    content: unknown,
+  ): string[] {
+    if (!("layouts" in field)) {
+      return getFieldBlocks(field, content).map((block) => block.id);
+    }
+    if (!Array.isArray(content) || !("fieldsets" in field)) return [];
+
+    return (content as KirbyLayout[]).flatMap((row) =>
+      row.columns.flatMap((column) =>
+        column.blocks.map((block) => `${row.id}/${column.id}/${block.id}`),
+      ),
+    );
+  }
+
   function getBlockIcon(type: string, field: KirbyAnyFieldProps): string {
     const fieldsetIcon =
       "fieldsets" in field ? field.fieldsets?.[type]?.icon : undefined;
@@ -98,6 +119,7 @@ export function useBlocks() {
 
   return {
     getFieldBlocks,
+    getFieldBlockElementKeys,
     getBlockIcon,
     extractBlockText,
     scrollToBlock,

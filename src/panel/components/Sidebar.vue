@@ -18,8 +18,13 @@ import SidebarBody from "./Ui/SidebarBody.vue";
 const panel = usePanel();
 const helpers = useHelpers();
 const { currentContent } = useContent();
-const { getFieldBlocks, getBlockIcon, extractBlockText, scrollToBlock } =
-  useBlocks();
+const {
+  getFieldBlocks,
+  getFieldBlockElementKeys,
+  getBlockIcon,
+  extractBlockText,
+  scrollToBlock,
+} = useBlocks();
 const fields = useTabFields();
 
 const desktopMedia = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -36,7 +41,10 @@ const isOpen = computed(() =>
 const activeFieldNames = ref<string[]>([]);
 const activeBlockIds = ref<string[]>([]);
 const stopObservingField = new Map<string, () => void>();
-const stopObservingBlock = new Map<string, () => void>();
+const observedBlocks = new Map<
+  string,
+  { element: Element; stop: () => void }
+>();
 
 const observer = useIntersectionObserver({
   rootMargin: "0px",
@@ -80,6 +88,16 @@ const listedBlockIds = computed(() =>
   ),
 );
 
+// Reads the content only through the visible fields, never `currentContent`
+// as a whole: Kirby switches `panel.view` to the next view while the sidebar is
+// still mounted, and `panel.content.version()` throws for a view without
+// content versions.
+const blockElementKeys = computed(() =>
+  visibleFields.value.flatMap(([name, field]) =>
+    getFieldBlockElementKeys(field, currentContent.value[name]),
+  ),
+);
+
 useEventListener(desktopMedia, "change", (event) => {
   isDesktop.value = event.matches;
 
@@ -106,15 +124,10 @@ watch(
   },
 );
 
-// Reads the content only through the listed fields, never `currentContent`
-// directly: Kirby switches `panel.view` to the next view while the sidebar is
-// still mounted, and `panel.content.version()` throws for a view without
-// content versions.
-//
 // Kirby renders an added block in the same flush, before or after a `pre`
 // watcher, by whether its field or the sidebar was created first.
 watch(
-  () => listedBlockIds.value.join(),
+  () => blockElementKeys.value.join(),
   () => {
     updateBlockObservers();
   },
@@ -181,7 +194,7 @@ function cleanupObservers() {
   activeFieldNames.value = [];
   activeBlockIds.value = [];
   stopObservingField.clear();
-  stopObservingBlock.clear();
+  observedBlocks.clear();
 }
 
 function updateFieldObservers() {
@@ -231,15 +244,22 @@ function unobserveHiddenFields(visibleFieldNames: Set<string>) {
 }
 
 function updateBlockObservers() {
-  for (const blockId of listedBlockIds.value) observeBlock(blockId);
+  const listedIds = new Set(listedBlockIds.value);
 
-  unobserveDeletedBlocks(new Set(listedBlockIds.value));
+  for (const blockId of listedIds) observeBlock(blockId);
+
+  unobserveBlocks(
+    [...observedBlocks.keys()].filter((id) => !listedIds.has(id)),
+  );
 }
 
 function observeBlock(blockId: string) {
-  if (stopObservingBlock.has(blockId)) return;
-
   const blockElement = document.querySelector(`[data-id="${blockId}"]`);
+  const observedBlock = observedBlocks.get(blockId);
+  if (observedBlock?.element === blockElement) return;
+
+  // Kirby rendered the block anew, so the observed element has left the page.
+  if (observedBlock) unobserveBlocks([blockId]);
   if (!blockElement) return;
 
   const stop = observer.observe(blockElement, (isIntersecting) => {
@@ -252,22 +272,19 @@ function observeBlock(blockId: string) {
     }
   });
 
-  stopObservingBlock.set(blockId, stop);
+  observedBlocks.set(blockId, { element: blockElement, stop });
 }
 
-function unobserveDeletedBlocks(currentBlockIds: Set<string>) {
-  const deletedBlockIds = [...stopObservingBlock.keys()].filter(
-    (id) => !currentBlockIds.has(id),
-  );
-  if (!deletedBlockIds.length) return;
+function unobserveBlocks(blockIds: string[]) {
+  if (!blockIds.length) return;
 
   activeBlockIds.value = activeBlockIds.value.filter(
-    (activeId) => !deletedBlockIds.includes(activeId),
+    (activeId) => !blockIds.includes(activeId),
   );
 
-  for (const id of deletedBlockIds) {
-    stopObservingBlock.get(id)?.();
-    stopObservingBlock.delete(id);
+  for (const id of blockIds) {
+    observedBlocks.get(id)?.stop();
+    observedBlocks.delete(id);
   }
 }
 
