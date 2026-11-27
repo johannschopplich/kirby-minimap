@@ -110,11 +110,15 @@ watch(
 // directly: Kirby switches `panel.view` to the next view while the sidebar is
 // still mounted, and `panel.content.version()` throws for a view without
 // content versions.
+//
+// Kirby renders an added block in the same flush, before or after a `pre`
+// watcher, by whether its field or the sidebar was created first.
 watch(
   () => listedBlockIds.value.join(),
   () => {
     updateBlockObservers();
   },
+  { flush: "post" },
 );
 
 // Kirby renders a field it shows again as a new element, and only after this
