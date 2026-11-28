@@ -17,8 +17,8 @@ export const SUPPORTED_VIEW_COMPONENTS = new Set([
 ]);
 
 /**
- * Field and block types that carry nothing to jump to. Kirby renders `headline`
- * and `info` fields without the `k-field-name-*` class the sidebar jumps by.
+ * Field types that carry nothing to jump to. Kirby renders `headline` and
+ * `info` fields without the `k-field-name-*` class the sidebar jumps by.
  */
 export const EXCLUDED_FIELD_TYPES = new Set([
   "gap",
@@ -27,6 +27,9 @@ export const EXCLUDED_FIELD_TYPES = new Set([
   "info",
   "line",
 ]);
+
+/** Block types that carry nothing to jump to. */
+export const EXCLUDED_BLOCK_TYPES = new Set(["gap", "hidden", "line"]);
 
 /** Icons for the default block types, which ship no fieldset icon. */
 export const BLOCK_ICON_MAP: Record<string, string> = {

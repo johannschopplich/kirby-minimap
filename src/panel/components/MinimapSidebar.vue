@@ -19,7 +19,7 @@ import { useModelFields } from "../composables/model-fields";
 import {
   BLOCK_TEXT_LIMIT,
   DESKTOP_MEDIA_QUERY,
-  EXCLUDED_FIELD_TYPES,
+  EXCLUDED_BLOCK_TYPES,
   EXPANDED_STATE_STORAGE_KEY,
 } from "../constants";
 
@@ -65,7 +65,7 @@ const resolvedFields = computed<Record<string, ResolvedField>>(() =>
     visibleFields.value.map(([name, field]) => {
       const content = contentChanges.value[name] ?? currentContent.value[name];
       const blocks = getFieldBlocks(field, content)
-        .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
+        .filter((block) => !EXCLUDED_BLOCK_TYPES.has(block.type))
         .map((block) => ({
           ...block,
           icon: getBlockIcon(block.type, field),
