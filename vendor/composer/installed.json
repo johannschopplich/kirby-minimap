@@ -22,6 +22,7 @@
                 "composer/composer": "^1.8 || ^2.0"
             },
             "time": "2020-12-28T12:54:39+00:00",
+            "published-time": "2020-12-28T15:05:43+00:00",
             "type": "composer-plugin",
             "extra": {
                 "class": "Kirby\\ComposerInstaller\\Plugin"
@@ -73,6 +74,7 @@
                 "phpunit/phpunit": "^12"
             },
             "time": "2026-09-07T07:05:05+00:00",
+            "published-time": "2026-09-07T07:06:47+00:00",
             "type": "library",
             "extra": {
                 "kirby-cms-path": false
