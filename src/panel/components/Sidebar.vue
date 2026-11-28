@@ -10,7 +10,7 @@ import { useTabFields } from "../composables/tab-fields";
 import {
   BLOCK_TEXT_LIMIT,
   DESKTOP_MEDIA_QUERY,
-  EXCLUDED_FIELD_TYPES,
+  EXCLUDED_BLOCK_TYPES,
   EXPANDED_STATE_STORAGE_KEY,
 } from "../constants";
 import SidebarBody from "./Ui/SidebarBody.vue";
@@ -63,7 +63,7 @@ const resolvedFields = computed(() =>
   visibleFields.value.map(([name, field]) => {
     const content = currentContent.value[name];
     const blocks = getFieldBlocks(field, content)
-      .filter((block) => !EXCLUDED_FIELD_TYPES.has(block.type))
+      .filter((block) => !EXCLUDED_BLOCK_TYPES.has(block.type))
       .map((block) => ({
         id: block.id,
         icon: getBlockIcon(block.type, field),
